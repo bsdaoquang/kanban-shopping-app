@@ -2,29 +2,16 @@
 
 import axios from 'axios';
 import queryString from 'query-string';
-import { localDataNames } from '../../constants/appInfos';
 
-const baseURL = `http://192.168.1.9:3001`;
-const baseURLProduction = `https://server-kanban.onrender.com`;
-
-const getAssetToken = () => {
-	const res = localStorage.getItem(localDataNames.authData);
-
-	if (res) {
-		const auth = JSON.parse(res);
-		return auth && auth.token ? auth.token : '';
-	} else {
-		return '';
-	}
-};
+const baseURL = `http://192.168.1.244:3001`;
 
 const axiosClient = axios.create({
-	baseURL: baseURL,
+	baseURL,
 	paramsSerializer: (params) => queryString.stringify(params),
 });
 
 axiosClient.interceptors.request.use(async (config: any) => {
-	const accesstoken = getAssetToken();
+	const accesstoken = '';
 
 	config.headers = {
 		Authorization: accesstoken ? `Bearer ${accesstoken}` : '',
@@ -35,9 +22,9 @@ axiosClient.interceptors.request.use(async (config: any) => {
 	return { ...config, data: config.data ?? null };
 });
 
-axiosClient.interceptors.response.use(
+axios.interceptors.response.use(
 	(res) => {
-		if (res.data && res.status >= 200 && res.status < 300) {
+		if (res.data && res.status >= 200 && res.status <= 299) {
 			return res.data;
 		} else {
 			return Promise.reject(res.data);

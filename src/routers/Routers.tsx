@@ -1,17 +1,17 @@
 /** @format */
+import HeaderComponent from '@/components/HeaderComponent';
+import { authSelector } from '@/redux/reducers/authReducer';
 import { Layout, Spin } from 'antd';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { localDataNames } from '../constants/appInfos';
-import { addAuth, authSeletor, AuthState } from '../redux/reducers/authReducer';
+import { useSelector } from 'react-redux';
 
 const { Content, Footer, Header } = Layout;
 
 const Routers = ({ Component, pageProps }: any) => {
 	const [isLoading, setIsLoading] = useState(false);
 
-	const auth: AuthState = useSelector(authSeletor);
-	const dispatch = useDispatch();
+	const path = usePathname();
 
 	useEffect(() => {
 		getData();
@@ -22,20 +22,20 @@ const Routers = ({ Component, pageProps }: any) => {
 		// res && dispatch(addAuth(JSON.parse(res)));
 	};
 
+	const renderContent = (
+		<Content>
+			<Component pageProps={pageProps} />
+		</Content>
+	);
+
 	return isLoading ? (
 		<Spin />
-	) : !auth.token ? (
-		<Layout>
-			<Content>
-				<Component pageProps={pageProps} />
-			</Content>
-		</Layout>
+	) : path && path.includes('auth') ? (
+		<Layout className='bg-white'>{renderContent}</Layout>
 	) : (
-		<Layout>
-			<Header />
-			<Content>
-				<Component pageProps={pageProps} />
-			</Content>
+		<Layout className='bg-white'>
+			<HeaderComponent />
+			{renderContent}
 			<Footer />
 		</Layout>
 	);
