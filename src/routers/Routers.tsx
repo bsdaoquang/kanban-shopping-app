@@ -1,10 +1,11 @@
 /** @format */
 import HeaderComponent from '@/components/HeaderComponent';
-import { authSelector } from '@/redux/reducers/authReducer';
+import { localDataNames } from '@/constants/appInfos';
+import { addAuth, authSelector } from '@/redux/reducers/authReducer';
 import { Layout, Spin } from 'antd';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const { Content, Footer, Header } = Layout;
 
@@ -12,14 +13,15 @@ const Routers = ({ Component, pageProps }: any) => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const path = usePathname();
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		getData();
 	}, []);
 
 	const getData = async () => {
-		// const res = localStorage.getItem(localDataNames.authData);
-		// res && dispatch(addAuth(JSON.parse(res)));
+		const res = localStorage.getItem(localDataNames.authData);
+		res && dispatch(addAuth(JSON.parse(res)));
 	};
 
 	const renderContent = (

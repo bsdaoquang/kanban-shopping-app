@@ -25,7 +25,7 @@ axiosClient.interceptors.request.use(async (config: any) => {
 axios.interceptors.response.use(
 	(res) => {
 		if (res.data && res.status >= 200 && res.status <= 299) {
-			return res.data;
+			return res.data.data;
 		} else {
 			return Promise.reject(res.data);
 		}
