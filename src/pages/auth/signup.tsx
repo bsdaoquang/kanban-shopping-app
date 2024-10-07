@@ -9,11 +9,17 @@ const SignUp = () => {
 				<div
 					className='d-none d-md-block col-6 p-0'
 					style={{
+						backgroundImage: `url(/images/bg-auth-1.png)`,
+						backgroundSize: 'cover',
 						backgroundRepeat: 'no-repeat',
-						backgroundColor: 'coral',
-						backgroundImage: `url(${require('../../assets/images/Logo + Text.png')})`,
 					}}>
-					<h1>fafafa</h1>
+					<div className='mt-5 ml-5' style={{ backgroundColor: 'transparent' }}>
+						<img
+							src='/images/logo.png'
+							alt=''
+							style={{ backgroundColor: 'transparent' }}
+						/>
+					</div>
 				</div>
 				<div className='col-sm-12 col-md-6 p-0'>fafa</div>
 			</div>
