@@ -1,6 +1,7 @@
 /** @format */
 
 import handleAPI from '@/apis/handleApi';
+import { addAuth } from '@/redux/reducers/authReducer';
 import {
 	Button,
 	Checkbox,
@@ -27,6 +28,7 @@ const SignUp = () => {
 	const [isAgree, setIsAgree] = useState(true);
 	const [signValues, setSignValues] = useState<any>();
 	const [numsOfCode, setNumsOfCode] = useState<string[]>([]);
+	const [times, setTimes] = useState(160);
 
 	const [form] = Form.useForm();
 	const dispatch = useDispatch();
@@ -39,6 +41,13 @@ const SignUp = () => {
 	const inpRef4 = useRef<any>(null);
 	const inpRef5 = useRef<any>(null);
 	const inpRef6 = useRef<any>(null);
+
+	useEffect(() => {
+		const time = setInterval(() => {
+			setTimes((t) => t - 1);
+		}, 1000);
+		return () => clearInterval(time);
+	}, []);
 
 	const handleSignUp = async (values: SignUp) => {
 		const api = `/customers/add-new`;
@@ -54,8 +63,8 @@ const SignUp = () => {
 			if (res.data) {
 				setSignValues(res.data.data);
 			}
-		} catch (error) {
-			console.log(error);
+		} catch (error: any) {
+			message.error(`User is existing`);
 		} finally {
 			setIsLoading(false);
 		}
@@ -73,21 +82,34 @@ const SignUp = () => {
 			let code = '';
 			numsOfCode.forEach((num) => (code += num));
 
-			const api = `/customers/verify?id=${signValues._id}`;
-
+			const api = `/customers/verify?id=${signValues._id}&code=${code}`;
 			try {
 				const res = await handleAPI({
 					url: api,
-					data: { code: code.toUpperCase() },
+					data: undefined,
 					method: 'put',
 				});
 
 				console.log(res);
+
+				dispatch(addAuth(res.data.data));
+				localStorage.setItem('authData', JSON.stringify(res.data.data));
 			} catch (error) {
 				console.log(error);
 			}
 		} else {
 			message.error('Invalid code');
+		}
+	};
+
+	const handleResendCode = async () => {
+		const api = `/customers/resend-verify?id=${signValues._id}&email=${signValues.email}`;
+		setNumsOfCode([]);
+		try {
+			await handleAPI({ url: api });
+			setTimes(60);
+		} catch (error) {
+			console.log(error);
 		}
 	};
 
@@ -249,6 +271,7 @@ const SignUp = () => {
 									</div>
 									<div className='mt-4'>
 										<Button
+											// disabled={numsOfCode.length < 6 || times < 0}
 											loading={isLoading}
 											type='primary'
 											size='large'
@@ -256,6 +279,15 @@ const SignUp = () => {
 											onClick={handleVerify}>
 											Verify
 										</Button>
+										<div className='mt-2 text-center'>
+											{times < 0 ? (
+												<Button type='link' onClick={handleResendCode}>
+													Resend
+												</Button>
+											) : (
+												<Typography>Resend a new code: {times}s</Typography>
+											)}
+										</div>
 									</div>
 								</>
 							) : (
