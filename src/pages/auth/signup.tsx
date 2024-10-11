@@ -79,8 +79,7 @@ const SignUp = () => {
 
 	const handleVerify = async () => {
 		if (numsOfCode.length >= 6) {
-			let code = '';
-			numsOfCode.forEach((num) => (code += num));
+			let code = numsOfCode.join('');
 
 			const api = `/customers/verify?id=${signValues._id}&code=${code}`;
 			try {
@@ -90,10 +89,10 @@ const SignUp = () => {
 					method: 'put',
 				});
 
-				console.log(res);
-
 				dispatch(addAuth(res.data.data));
 				localStorage.setItem('authData', JSON.stringify(res.data.data));
+
+				router.push('/');
 			} catch (error) {
 				console.log(error);
 			}
@@ -165,6 +164,7 @@ const SignUp = () => {
 											<Input
 												placeholder=''
 												size='large'
+												value={numsOfCode[0]}
 												style={{
 													fontSize: 32,
 													fontWeight: 'bold',
@@ -181,6 +181,7 @@ const SignUp = () => {
 												}}
 											/>
 											<Input
+												value={numsOfCode[1]}
 												ref={inpRef2}
 												placeholder=''
 												size='large'
@@ -199,6 +200,7 @@ const SignUp = () => {
 												}}
 											/>
 											<Input
+												value={numsOfCode[2]}
 												ref={inpRef3}
 												placeholder=''
 												size='large'
@@ -217,6 +219,7 @@ const SignUp = () => {
 												}}
 											/>
 											<Input
+												value={numsOfCode[3]}
 												ref={inpRef4}
 												placeholder=''
 												size='large'
@@ -235,6 +238,7 @@ const SignUp = () => {
 												}}
 											/>
 											<Input
+												value={numsOfCode[4]}
 												ref={inpRef5}
 												placeholder=''
 												size='large'
@@ -253,6 +257,7 @@ const SignUp = () => {
 												}}
 											/>
 											<Input
+												value={numsOfCode[5]}
 												ref={inpRef6}
 												placeholder=''
 												size='large'

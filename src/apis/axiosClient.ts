@@ -3,15 +3,21 @@
 import axios from 'axios';
 import queryString from 'query-string';
 
-const baseURL = `http://192.168.1.244:3001`;
+const baseURL = `http://192.168.1.10:3001`;
 
 const axiosClient = axios.create({
 	baseURL,
 	paramsSerializer: (params) => queryString.stringify(params),
 });
 
+const getAccesstoken = () => {
+	const res = localStorage.getItem('authData');
+
+	return res ? JSON.parse(res).accesstoken : '';
+};
+
 axiosClient.interceptors.request.use(async (config: any) => {
-	const accesstoken = '';
+	const accesstoken = getAccesstoken();
 
 	config.headers = {
 		Authorization: accesstoken ? `Bearer ${accesstoken}` : '',
@@ -19,7 +25,7 @@ axiosClient.interceptors.request.use(async (config: any) => {
 		...config.headers,
 	};
 
-	return { ...config, data: config.data ?? null };
+	return { ...config, data: config.data ?? undefined };
 });
 
 axios.interceptors.response.use(
