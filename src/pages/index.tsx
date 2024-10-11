@@ -1,6 +1,7 @@
 /** @format */
 
 import handleAPI from '@/apis/handleApi';
+import ButtonComponent from '@/components/ButtonComponent';
 import { authSelector } from '@/redux/reducers/authReducer';
 import { Button } from 'antd';
 import { useEffect } from 'react';
