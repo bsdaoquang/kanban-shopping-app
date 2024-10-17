@@ -18,7 +18,7 @@ const HeaderComponent = () => {
 	const router = useRouter();
 
 	return (
-		<>
+		<div className='container-fluid bg-white'>
 			<div className='p-3'>
 				<div className='row'>
 					<div className='d-none d-sm-block d-md-none'>
@@ -99,7 +99,7 @@ const HeaderComponent = () => {
 				placement='left'>
 				Helo
 			</Drawer>
-		</>
+		</div>
 	);
 };
 
