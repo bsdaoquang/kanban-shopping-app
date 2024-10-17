@@ -84,19 +84,21 @@ const HomePage = (data: any) => {
 						style={{
 							overflow: 'scroll',
 							width: '100%',
-							position: 'relative',
+
+							flexWrap: 'nowrap',
 						}}>
 						{cats.map((cat) => (
-							<div key={cat._id}>
-								<div className='col'>
-									<Card
-										hoverable
-										cover={
-											<img src='https://i.pinimg.com/originals/d8/51/45/d851458b9cea15c9b919c58992bb6740.jpg' />
-										}
-										style={{ width: 150 }}
-									/>
-								</div>
+							<div key={cat._id} style={{ width: 200 }}>
+								<img
+									src='https://i.pinimg.com/originals/d8/51/45/d851458b9cea15c9b919c58992bb6740.jpg'
+									style={{
+										width: 170,
+										objectFit: 'cover',
+										maxHeight: 180,
+										borderRadius: 16,
+										height: 180,
+									}}
+								/>
 							</div>
 						))}
 					</div>
