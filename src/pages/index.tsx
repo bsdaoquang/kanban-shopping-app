@@ -5,28 +5,78 @@ import HeadComponent from '@/components/HeadComponent';
 import { appInfo } from '@/constants/appInfos';
 import { CategoyModel } from '@/models/Products';
 import { PromotionModel } from '@/models/PromotionModel';
-import { Button, Card, Carousel, Typography } from 'antd';
-import { BsArrowRight } from 'react-icons/bs';
+import {
+	Button,
+	Card,
+	Carousel,
+	Modal,
+	Skeleton,
+	Space,
+	Typography,
+} from 'antd';
+import { CarouselRef } from 'antd/es/carousel';
+import { useRouter } from 'next/router';
+import { useEffect, useRef, useState } from 'react';
+import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 
 const { Title } = Typography;
 
 const HomePage = (data: any) => {
 	const pageProps = data.pageProps;
-
 	const {
 		promotions,
 		categories,
 	}: { promotions: PromotionModel[]; categories: CategoyModel[] } = pageProps;
+
+	const [numOfColumn, setNumOfColumn] = useState(4);
+	const [catsArrays, setCatsArrays] = useState<
+		{
+			key: string;
+			values: CategoyModel[];
+		}[]
+	>([]);
+
+	const catSlideRef = useRef<CarouselRef>(null);
+	const router = useRouter();
 
 	const cats =
 		categories.length > 0
 			? categories.filter((element) => !element.parentId)
 			: [];
 
+	useEffect(() => {
+		window.addEventListener('resize', (event) => {
+			const width = window.innerWidth;
+			const index = width <= 480 ? 2 : width <= 768 ? 3 : 4;
+
+			setNumOfColumn(index);
+		});
+
+		return () => window.removeEventListener('resize', () => {});
+	}, []);
+
+	useEffect(() => {
+		const items: any[] = [];
+		const numOfDatas = Math.ceil(cats.length / numOfColumn);
+
+		for (let index = 0; index < numOfDatas; index++) {
+			const values = cats.splice(0, numOfColumn);
+
+			items.push({
+				key: `array${index}`,
+				values,
+			});
+		}
+
+		setCatsArrays(items);
+	}, [numOfColumn]);
+
 	return (
 		<>
 			<HeadComponent title='Home' />
-			<div className='container-fluid bg-light d-none d-md-block'>
+			<div
+				className='container-fluid d-none d-md-block'
+				style={{ backgroundColor: '#f3f3f3' }}>
 				<div className='container'>
 					{promotions && promotions.length > 0 && (
 						<Carousel
@@ -78,30 +128,70 @@ const HomePage = (data: any) => {
 			</div>
 			<div className='container'>
 				<Section>
-					<TabbarComponent title='Shop by Categories' />
-					<div
-						className='row'
-						style={{
-							overflow: 'scroll',
-							width: '100%',
-
-							flexWrap: 'nowrap',
-						}}>
-						{cats.map((cat) => (
-							<div key={cat._id} style={{ width: 200 }}>
-								<img
-									src='https://i.pinimg.com/originals/d8/51/45/d851458b9cea15c9b919c58992bb6740.jpg'
-									style={{
-										width: 170,
-										objectFit: 'cover',
-										maxHeight: 180,
-										borderRadius: 16,
-										height: 180,
-									}}
+					<TabbarComponent
+						title='Shop by Categories'
+						right={
+							<Space>
+								<Button
+									size='large'
+									type='default'
+									icon={<BsArrowLeft size={18} />}
+									onClick={() => catSlideRef.current?.prev()}
 								/>
+								<Button
+									size='large'
+									type='default'
+									icon={<BsArrowRight size={18} />}
+									onClick={() => catSlideRef.current?.next()}
+								/>
+							</Space>
+						}
+					/>
+					<Carousel speed={1500} ref={catSlideRef} autoplay>
+						{catsArrays.map((array) => (
+							<div>
+								<div className='row'>
+									{array.values.map((item) => (
+										<div className='col'>
+											{
+												<div>
+													<img
+														style={{
+															width: '100%',
+
+															borderRadius: 12,
+														}}
+														alt={item.title}
+														src={
+															item.image ??
+															`https://imgcdn.stablediffusionweb.com/2024/4/25/0af7fb7a-9192-47cf-8f7b-7273a51b3e44.jpg`
+														}
+													/>
+													<div
+														className='text-center'
+														style={{
+															position: 'absolute',
+															bottom: 10,
+															right: 0,
+															left: 0,
+														}}>
+														<Button
+															onClick={() =>
+																router.push(`/filter-product?catId=${item._id}`)
+															}
+															style={{ width: '80%' }}
+															size='large'>
+															{item.title}
+														</Button>
+													</div>
+												</div>
+											}
+										</div>
+									))}
+								</div>
 							</div>
 						))}
-					</div>
+					</Carousel>
 				</Section>
 			</div>
 		</>
