@@ -1,19 +1,11 @@
 /** @format */
 
-import { Section, TabbarComponent } from '@/components';
+import { ProductItem, Section, TabbarComponent } from '@/components';
 import HeadComponent from '@/components/HeadComponent';
 import { appInfo } from '@/constants/appInfos';
-import { CategoyModel } from '@/models/Products';
+import { CategoyModel, ProductModel } from '@/models/Products';
 import { PromotionModel } from '@/models/PromotionModel';
-import {
-	Button,
-	Card,
-	Carousel,
-	Modal,
-	Skeleton,
-	Space,
-	Typography,
-} from 'antd';
+import { Button, Carousel, Space, Typography } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -26,7 +18,12 @@ const HomePage = (data: any) => {
 	const {
 		promotions,
 		categories,
-	}: { promotions: PromotionModel[]; categories: CategoyModel[] } = pageProps;
+		bestSellers,
+	}: {
+		promotions: PromotionModel[];
+		categories: CategoyModel[];
+		bestSellers: ProductModel[];
+	} = pageProps;
 
 	const [numOfColumn, setNumOfColumn] = useState(4);
 	const [catsArrays, setCatsArrays] = useState<
@@ -193,6 +190,14 @@ const HomePage = (data: any) => {
 						))}
 					</Carousel>
 				</Section>
+				<Section>
+					<TabbarComponent title='Our Bestseller' />
+					<div className='row'>
+						{bestSellers.map((item) => (
+							<ProductItem item={item} key={item._id} />
+						))}
+					</div>
+				</Section>
 			</div>
 		</>
 	);
@@ -206,10 +211,16 @@ export const getStaticProps = async () => {
 		const resCats = await fetch(`${appInfo.baseUrl}/products/get-categories`);
 		const resultCats = await resCats.json();
 
+		const resBestSeller = await fetch(
+			`${appInfo.baseUrl}/products/get-best-seller`
+		);
+		const resultsSeller = await resBestSeller.json();
+
 		return {
 			props: {
 				promotions: result.data,
 				categories: resultCats.data,
+				bestSellers: resultsSeller.data,
 			},
 		};
 	} catch (error) {

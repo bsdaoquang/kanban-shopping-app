@@ -18,6 +18,7 @@ export interface ProductModel {
 	slug: string;
 	description: string;
 	categories: string[];
+	images: string[];
 	supplier: string;
 	createdAt: string;
 	updatedAt: string;
