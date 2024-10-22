@@ -47,8 +47,20 @@
   transition: 1s;
 }
 
+.shadow-hover:hover{
+  box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.44);
+  -webkit-box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.44);
+  -moz-box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.44);
+}
+
 .shadow{
   box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.44);
   -webkit-box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.44);
   -moz-box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.44);
+}
+
+.color-item{
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
 }

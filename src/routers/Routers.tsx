@@ -37,8 +37,7 @@ const Routers = ({ Component, pageProps }: any) => {
 	) : (
 		<Layout className='bg-white'>
 			<HeaderComponent />
-			{renderContent}
-			{/* <Footer /> */}
+			<div>{renderContent}</div>
 		</Layout>
 	);
 };
