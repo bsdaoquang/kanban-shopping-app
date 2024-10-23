@@ -1,10 +1,13 @@
 /** @format */
 
+import handleAPI from '@/apis/handleApi';
+import { SubProductModel } from '@/models/Products';
 import { authSelector, removeAuth } from '@/redux/reducers/authReducer';
-import { Affix, Button, Drawer, Menu, Space } from 'antd';
+import { cartSelector } from '@/redux/reducers/cartReducer';
+import { Affix, Badge, Button, Drawer, Menu, Space } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { BiCart, BiPowerOff } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoHeartOutline, IoSearch } from 'react-icons/io5';
@@ -16,6 +19,36 @@ const HeaderComponent = () => {
 	const auth = useSelector(authSelector);
 	const dispatch = useDispatch();
 	const router = useRouter();
+
+	const cart: SubProductModel[] = useSelector(cartSelector);
+
+	useEffect(() => {
+		cart.length > 0 && handleUpdateCardToDatabase(cart);
+	}, [cart]);
+
+	const handleUpdateCardToDatabase = async (data: any[]) => {
+		data.forEach(async (item) => {
+			const api = `/carts/add-new${item._id ? `?id=${item._id}` : ''}`;
+
+			const value = {
+				createdBy: item.createdBy,
+				count: item.count,
+				subProductId: item.subProductId,
+				size: item.size,
+				color: item.color,
+				price: item.price,
+				qty: item.qty,
+				productId: item.productId,
+			};
+
+			try {
+				// console.log(value);
+				const res = await handleAPI({ url: api, data: value, method: 'post' });
+			} catch (error) {
+				console.log(error);
+			}
+		});
+	};
 
 	return (
 		<Affix offsetTop={0}>
@@ -70,7 +103,15 @@ const HeaderComponent = () => {
 							<Space>
 								<Button icon={<IoSearch size={24} />} type='text' />
 								<Button icon={<IoHeartOutline size={24} />} type='text' />
-								<Button icon={<BiCart size={24} />} type='text' />
+
+								<Button
+									icon={
+										<Badge count={cart.length}>
+											<BiCart size={24} />
+										</Badge>
+									}
+									type='text'
+								/>
 
 								{auth.accesstoken && auth._id ? (
 									<Button

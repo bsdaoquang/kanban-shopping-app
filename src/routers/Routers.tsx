@@ -1,4 +1,5 @@
 /** @format */
+import handleAPI from '@/apis/handleApi';
 import HeaderComponent from '@/components/HeaderComponent';
 import { localDataNames } from '@/constants/appInfos';
 import { addAuth, authSelector } from '@/redux/reducers/authReducer';
@@ -14,14 +15,36 @@ const Routers = ({ Component, pageProps }: any) => {
 
 	const path = usePathname();
 	const dispatch = useDispatch();
+	const auth = useSelector(authSelector);
 
 	useEffect(() => {
 		getData();
 	}, []);
 
+	useEffect(() => {
+		getDatabaseDatas();
+	}, [auth]);
+
 	const getData = async () => {
 		const res = localStorage.getItem(localDataNames.authData);
 		res && dispatch(addAuth(JSON.parse(res)));
+	};
+	const getDatabaseDatas = async () => {
+		setIsLoading(true);
+		try {
+			if (auth._id) {
+				await getCardInDatabase();
+			}
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const getCardInDatabase = async () => {
+		const api = `/carts`;
+		const res = await handleAPI({ url: api });
 	};
 
 	const renderContent = (

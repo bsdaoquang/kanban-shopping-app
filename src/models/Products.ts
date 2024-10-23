@@ -41,4 +41,6 @@ export interface SubProductModel {
 	updatedAt: string;
 	__v: number;
 	imgURL?: string;
+	count: number;
+	createdBy: string;
 }

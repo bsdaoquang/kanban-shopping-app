@@ -5,6 +5,7 @@ import { addAuth } from '@/redux/reducers/authReducer';
 import { Button, Form, Input, message, Typography } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -18,6 +19,11 @@ const Login = () => {
 	const router = useRouter();
 
 	const [form] = Form.useForm();
+
+	const searchParams = useSearchParams();
+
+	const id = searchParams.get('productId');
+	const slug = searchParams.get('slug');
 
 	const handleLogin = async (values: { email: string; password: string }) => {
 		const api = `/customers/login`;
@@ -33,7 +39,7 @@ const Login = () => {
 			dispatch(addAuth(res.data.data));
 			localStorage.setItem('authData', JSON.stringify(res.data.data));
 
-			router.push('/');
+			router.push(id && slug ? `/products/${slug}/${id}` : '/');
 		} catch (error) {
 			console.log(error);
 			message.error(

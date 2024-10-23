@@ -23,8 +23,8 @@
   left: 0;
   padding: 15px;
   
-}
-.ant-btn-icon-only{
+} 
+.btn-list  .ant-btn-icon-only{
  border: none;
   width: 38px;
   border-radius: 100px  !important
@@ -63,4 +63,17 @@
   width: 32px;
   height: 32px;
   border-radius: 4px;
+}
+
+.button-groups{
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  border: 1px solid #212121;
+  min-height: 40px;
+
+}
+
+.button-groups span{
+  padding: 0 12px
 }
