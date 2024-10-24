@@ -92,6 +92,7 @@ const ProductDetail = ({ pageProps }: any) => {
 					productId: item.productId,
 					image: item.imgURL ?? '',
 				};
+
 				dispatch(addProduct(value));
 			} else {
 				message.error('Please choice a product!!!!');

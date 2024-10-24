@@ -4,7 +4,20 @@ import handleAPI from '@/apis/handleApi';
 import { SubProductModel } from '@/models/Products';
 import { createSlice } from '@reduxjs/toolkit';
 
-const innitState: SubProductModel[] = [];
+export interface CartItemModel {
+	createdBy: string;
+	count: number;
+	subProductId: string;
+	size: string;
+	color: string;
+	price: number;
+	qty: number;
+	productId: string;
+	image: string;
+	_id: string;
+}
+
+const innitState: CartItemModel[] = [];
 
 const cartSlice = createSlice({
 	name: 'cart',
@@ -13,15 +26,29 @@ const cartSlice = createSlice({
 	},
 	reducers: {
 		addProduct: (state, action) => {
-			const items: SubProductModel[] = [...state.data];
+			const items: CartItemModel[] = [...state.data];
+			const item = action.payload;
+
+			const index = items.findIndex(
+				(element) => element.subProductId === item.subProductId
+			);
+
+			if (index !== -1) {
+				items[index].count = items[index].count + item.count;
+			} else {
+				items.push(item);
+			}
+
+			state.data = items;
+		},
+		removeProduct: (state, action) => {
+			const items = [...state.data];
 			const item = action.payload;
 
 			const index = items.findIndex((element) => element._id === item._id);
 
 			if (index !== -1) {
-				items[index].count += item.count;
-			} else {
-				items.push(item);
+				items.splice(index, 1);
 			}
 
 			state.data = items;
@@ -33,6 +60,6 @@ const cartSlice = createSlice({
 });
 
 export const cartReducer = cartSlice.reducer;
-export const { addProduct, syncProducts } = cartSlice.actions;
+export const { addProduct, syncProducts, removeProduct } = cartSlice.actions;
 
 export const cartSelector = (state: any) => state.cartReducer.data;
