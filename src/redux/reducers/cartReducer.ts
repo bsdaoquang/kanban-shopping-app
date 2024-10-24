@@ -26,10 +26,13 @@ const cartSlice = createSlice({
 
 			state.data = items;
 		},
+		syncProducts: (state, action) => {
+			state.data = action.payload;
+		},
 	},
 });
 
 export const cartReducer = cartSlice.reducer;
-export const { addProduct } = cartSlice.actions;
+export const { addProduct, syncProducts } = cartSlice.actions;
 
 export const cartSelector = (state: any) => state.cartReducer.data;

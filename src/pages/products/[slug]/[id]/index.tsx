@@ -90,6 +90,7 @@ const ProductDetail = ({ pageProps }: any) => {
 					price: item.price,
 					qty: item.qty,
 					productId: item.productId,
+					image: item.imgURL ?? '',
 				};
 				dispatch(addProduct(value));
 			} else {
@@ -260,8 +261,10 @@ const ProductDetail = ({ pageProps }: any) => {
 									</Paragraph>
 									<Space>
 										{subProducts.length > 0 &&
-											subProducts.map((item) => (
-												<a onClick={() => setSubProductSelected(item)}>
+											subProducts.map((item, index) => (
+												<a
+													key={`${item.color}-${index}`}
+													onClick={() => setSubProductSelected(item)}>
 													<div
 														className='color-item'
 														style={{ background: item.color }}
@@ -283,6 +286,7 @@ const ProductDetail = ({ pageProps }: any) => {
 										{subProducts.length > 0 &&
 											subProducts.map((item) => (
 												<Button
+													key={item.size}
 													type={
 														subProductSelected.size === item.size
 															? 'primary'

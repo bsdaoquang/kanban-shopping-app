@@ -5,6 +5,7 @@ import { ProductModel } from '@/models/Products';
 import { VND } from '@/utils/handleCurrency';
 import { Button, Space, Typography } from 'antd';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import { BiTransfer } from 'react-icons/bi';
 import { BsEye } from 'react-icons/bs';
@@ -22,6 +23,7 @@ const ProductItem = (props: Props) => {
 	const [elementWidth, setElementWidth] = useState();
 
 	const ref = useRef<any>();
+	const router = useRouter();
 
 	useEffect(() => {
 		const width = ref.current?.offsetWidth;
@@ -85,7 +87,10 @@ const ProductItem = (props: Props) => {
 						</Space>
 					</div>
 					<div className='text-center'>
-						<Button size='large' style={{ width: '80%' }}>
+						<Button
+							onClick={() => router.push(`/products/${item.slug}/${item._id}`)}
+							size='large'
+							style={{ width: '80%' }}>
 							Add to Cart
 						</Button>
 					</div>

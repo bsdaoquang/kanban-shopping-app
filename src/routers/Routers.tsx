@@ -3,6 +3,7 @@ import handleAPI from '@/apis/handleApi';
 import HeaderComponent from '@/components/HeaderComponent';
 import { localDataNames } from '@/constants/appInfos';
 import { addAuth, authSelector } from '@/redux/reducers/authReducer';
+import { syncProducts } from '@/redux/reducers/cartReducer';
 import { Layout, Spin } from 'antd';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -45,6 +46,10 @@ const Routers = ({ Component, pageProps }: any) => {
 	const getCardInDatabase = async () => {
 		const api = `/carts`;
 		const res = await handleAPI({ url: api });
+		// console.log(res);
+		if (res.data && res.data.data.length > 0) {
+			dispatch(syncProducts(res.data.data));
+		}
 	};
 
 	const renderContent = (

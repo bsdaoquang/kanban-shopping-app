@@ -35,7 +35,7 @@ const CarouselImages = (props: Props) => {
 	return (
 		<Carousel autoplay className='mt-4'>
 			{images.map((groups, index) => (
-				<div>
+				<div key={`image${index}`}>
 					<Space key={`groups${index}`}>
 						{groups.map((item) => (
 							<a key={item._id} onClick={() => onClick(item)}>

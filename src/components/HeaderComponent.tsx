@@ -39,6 +39,7 @@ const HeaderComponent = () => {
 				price: item.price,
 				qty: item.qty,
 				productId: item.productId,
+				image: item.image,
 			};
 
 			try {
