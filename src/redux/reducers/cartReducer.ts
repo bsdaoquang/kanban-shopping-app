@@ -1,7 +1,5 @@
 /** @format */
 
-import handleAPI from '@/apis/handleApi';
-import { SubProductModel } from '@/models/Products';
 import { createSlice } from '@reduxjs/toolkit';
 
 export interface CartItemModel {
@@ -12,6 +10,7 @@ export interface CartItemModel {
 	color: string;
 	price: number;
 	qty: number;
+	title: string;
 	productId: string;
 	image: string;
 	_id: string;
@@ -53,6 +52,18 @@ const cartSlice = createSlice({
 
 			state.data = items;
 		},
+		changeCount: (state, action) => {
+			const items = [...state.data];
+			const { id, val } = action.payload;
+			const index = items.findIndex((element) => element._id === id);
+
+			if (index - 1) {
+				const newValue = items[index].count + val;
+				items[index].count = newValue;
+			}
+
+			state.data = items;
+		},
 		syncProducts: (state, action) => {
 			state.data = action.payload;
 		},
@@ -60,6 +71,7 @@ const cartSlice = createSlice({
 });
 
 export const cartReducer = cartSlice.reducer;
-export const { addProduct, syncProducts, removeProduct } = cartSlice.actions;
+export const { addProduct, syncProducts, removeProduct, changeCount } =
+	cartSlice.actions;
 
 export const cartSelector = (state: any) => state.cartReducer.data;

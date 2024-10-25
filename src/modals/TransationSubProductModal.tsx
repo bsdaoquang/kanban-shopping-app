@@ -63,6 +63,7 @@ const TransationSubProductModal = (props: Props) => {
 					createdBy: auth._id,
 					count: productSelected.count,
 					subProductId: item._id,
+					title: productSelected.title,
 					size: item.size,
 					color: item.color,
 					price: item.price,

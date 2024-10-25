@@ -3,11 +3,7 @@
 import handleAPI from '@/apis/handleApi';
 import { TransationSubProductModal } from '@/modals';
 import { authSelector, removeAuth } from '@/redux/reducers/authReducer';
-import {
-	CartItemModel,
-	cartSelector,
-	removeProduct,
-} from '@/redux/reducers/cartReducer';
+import { CartItemModel, cartSelector } from '@/redux/reducers/cartReducer';
 import { VND } from '@/utils/handleCurrency';
 import {
 	Affix,
@@ -20,7 +16,6 @@ import {
 	Dropdown,
 	List,
 	Menu,
-	Modal,
 	Space,
 	Typography,
 } from 'antd';
@@ -30,8 +25,9 @@ import { useEffect, useState } from 'react';
 import { AiOutlineTransaction } from 'react-icons/ai';
 import { BiCart, BiPowerOff } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { IoHeartOutline, IoSearch, IoTrash } from 'react-icons/io5';
+import { IoHeartOutline, IoSearch } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
+import ButtonRemoveCartItem from './ButtonRemoveCartItem';
 
 const HeaderComponent = () => {
 	const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
@@ -44,6 +40,8 @@ const HeaderComponent = () => {
 	const router = useRouter();
 
 	const cart: CartItemModel[] = useSelector(cartSelector);
+
+	// youtube: daoquang-livecode
 
 	useEffect(() => {
 		cart.length > 0 && handleUpdateCardToDatabase(cart);
@@ -58,6 +56,7 @@ const HeaderComponent = () => {
 				count: item.count,
 				subProductId: item.subProductId,
 				size: item.size,
+				title: item.title,
 				color: item.color,
 				price: item.price,
 				qty: item.qty,
@@ -66,23 +65,11 @@ const HeaderComponent = () => {
 			};
 
 			try {
-				const res = await handleAPI({ url: api, data: value, method: 'post' });
+				await handleAPI({ url: api, data: value, method: 'post' });
 			} catch (error) {
 				console.log(error);
 			}
 		});
-	};
-
-	const handleRemoveCartItem = async (item: any) => {
-		const api = `/carts/remove?id=${item._id}`;
-
-		try {
-			await handleAPI({ url: api, data: undefined, method: 'delete' });
-
-			dispatch(removeProduct(item));
-		} catch (error) {
-			console.log(error);
-		}
 	};
 
 	return (
@@ -164,21 +151,7 @@ const HeaderComponent = () => {
 																		/>
 																	}
 																/>
-																<Button
-																	onClick={() =>
-																		Modal.confirm({
-																			title: 'Confirm',
-																			content:
-																				'Are you sure you want to remove this item?',
-																			onOk: async () => {
-																				await handleRemoveCartItem(item);
-																			},
-																		})
-																	}
-																	icon={<IoTrash size={22} />}
-																	danger
-																	type='text'
-																/>
+																<ButtonRemoveCartItem item={item} />
 															</div>
 														}>
 														<List.Item.Meta
@@ -196,7 +169,7 @@ const HeaderComponent = () => {
 																			fontWeight: 300,
 																			fontSize: '1rem',
 																		}}>
-																		fafafa
+																		{item.title}
 																	</Typography.Text>
 																	<Typography.Paragraph
 																		style={{
@@ -224,16 +197,8 @@ const HeaderComponent = () => {
 
 											<div className='mt-4'>
 												<Button
-													onClick={() => {}}
-													type='primary'
-													ghost
-													size='large'
-													style={{ width: '100%' }}>
-													View Cart
-												</Button>
-												<Button
 													className='mt-2'
-													onClick={() => {}}
+													onClick={() => router.push(`/shop/checkout`)}
 													type='primary'
 													size='large'
 													style={{ width: '100%' }}>

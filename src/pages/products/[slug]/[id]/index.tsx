@@ -86,6 +86,7 @@ const ProductDetail = ({ pageProps }: any) => {
 					count,
 					subProductId: item._id,
 					size: item.size,
+					title: detail.title,
 					color: item.color,
 					price: item.price,
 					qty: item.qty,
