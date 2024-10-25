@@ -1,6 +1,7 @@
 /** @format */
 
 import handleAPI from '@/apis/handleApi';
+import { TransationSubProductModal } from '@/modals';
 import { authSelector, removeAuth } from '@/redux/reducers/authReducer';
 import {
 	CartItemModel,
@@ -26,6 +27,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { AiOutlineTransaction } from 'react-icons/ai';
 import { BiCart, BiPowerOff } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoHeartOutline, IoSearch, IoTrash } from 'react-icons/io5';
@@ -33,6 +35,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const HeaderComponent = () => {
 	const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
+	const [visibleModalTransationProduct, setVisibleModalTransationProduct] =
+		useState(false);
+	const [productSeleted, setProductSeleted] = useState<CartItemModel>();
 
 	const auth = useSelector(authSelector);
 	const dispatch = useDispatch();
@@ -146,21 +151,35 @@ const HeaderComponent = () => {
 													<List.Item
 														key={item._id}
 														extra={
-															<Button
-																onClick={() =>
-																	Modal.confirm({
-																		title: 'Confirm',
-																		content:
-																			'Are you sure you want to remove this item?',
-																		onOk: async () => {
-																			await handleRemoveCartItem(item);
-																		},
-																	})
-																}
-																icon={<IoTrash size={22} />}
-																danger
-																type='text'
-															/>
+															<div>
+																<Button
+																	onClick={() => {
+																		setProductSeleted(item);
+																		setVisibleModalTransationProduct(true);
+																	}}
+																	icon={
+																		<AiOutlineTransaction
+																			size={22}
+																			className='text-muted'
+																		/>
+																	}
+																/>
+																<Button
+																	onClick={() =>
+																		Modal.confirm({
+																			title: 'Confirm',
+																			content:
+																				'Are you sure you want to remove this item?',
+																			onOk: async () => {
+																				await handleRemoveCartItem(item);
+																			},
+																		})
+																	}
+																	icon={<IoTrash size={22} />}
+																	danger
+																	type='text'
+																/>
+															</div>
 														}>
 														<List.Item.Meta
 															avatar={
@@ -227,7 +246,7 @@ const HeaderComponent = () => {
 										<BiCart size={24} />
 									</Badge>
 								</Dropdown>
-
+								<Divider type='vertical' />
 								{auth.accesstoken && auth._id ? (
 									<Button
 										onClick={() => {
@@ -254,8 +273,16 @@ const HeaderComponent = () => {
 					open={isVisibleDrawer}
 					onClick={() => setIsVisibleDrawer(false)}
 					placement='left'>
-					Helo
+					Hello
 				</Drawer>
+
+				{productSeleted && (
+					<TransationSubProductModal
+						visible={visibleModalTransationProduct}
+						onClose={() => setVisibleModalTransationProduct(false)}
+						productSelected={productSeleted}
+					/>
+				)}
 			</div>
 		</Affix>
 	);

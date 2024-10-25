@@ -91,7 +91,7 @@ const ProductItem = (props: Props) => {
 							onClick={() => router.push(`/products/${item.slug}/${item._id}`)}
 							size='large'
 							style={{ width: '80%' }}>
-							Add to Cart
+							Detail
 						</Button>
 					</div>
 				</div>
