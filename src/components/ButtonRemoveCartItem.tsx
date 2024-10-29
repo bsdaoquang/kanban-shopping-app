@@ -17,13 +17,14 @@ const ButtonRemoveCartItem = (props: Props) => {
 	const handleRemoveCartItem = async (item: any) => {
 		const api = `/carts/remove?id=${item._id}`;
 
-		try {
-			await handleAPI({ url: api, data: undefined, method: 'delete' });
+		console.log(api);
+		// try {
+		// 	await handleAPI({ url: api, data: undefined, method: 'delete' });
 
-			dispatch(removeProduct(item));
-		} catch (error) {
-			console.log(error);
-		}
+		// 	dispatch(removeProduct(item));
+		// } catch (error) {
+		// 	console.log(error);
+		// }
 	};
 
 	return (

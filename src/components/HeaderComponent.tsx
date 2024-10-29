@@ -43,34 +43,34 @@ const HeaderComponent = () => {
 
 	// youtube: daoquang-livecode
 
-	useEffect(() => {
-		cart.length > 0 && handleUpdateCardToDatabase(cart);
-	}, [cart]);
+	// useEffect(() => {
+	// 	cart.length > 0 && handleUpdateCardToDatabase(cart);
+	// }, [cart]);
 
-	const handleUpdateCardToDatabase = async (data: CartItemModel[]) => {
-		data.forEach(async (item) => {
-			const api = `/carts/add-new${item._id ? `?id=${item._id}` : ''}`;
+	// const handleUpdateCardToDatabase = async (data: CartItemModel[]) => {
+	// 	data.forEach(async (item) => {
+	// 		const api = `/carts/add-new${item._id ? `?id=${item._id}` : ''}`;
 
-			const value = {
-				createdBy: item.createdBy,
-				count: item.count,
-				subProductId: item.subProductId,
-				size: item.size,
-				title: item.title,
-				color: item.color,
-				price: item.price,
-				qty: item.qty,
-				productId: item.productId,
-				image: item.image,
-			};
+	// 		const value = {
+	// 			createdBy: item.createdBy,
+	// 			count: item.count,
+	// 			subProductId: item.subProductId,
+	// 			size: item.size,
+	// 			title: item.title,
+	// 			color: item.color,
+	// 			price: item.price,
+	// 			qty: item.qty,
+	// 			productId: item.productId,
+	// 			image: item.image,
+	// 		};
 
-			try {
-				await handleAPI({ url: api, data: value, method: 'post' });
-			} catch (error) {
-				console.log(error);
-			}
-		});
-	};
+	// 		try {
+	// 			await handleAPI({ url: api, data: value, method: 'post' });
+	// 		} catch (error) {
+	// 			console.log(error);
+	// 		}
+	// 	});
+	// };
 
 	return (
 		<Affix offsetTop={0}>

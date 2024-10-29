@@ -1,11 +1,16 @@
 /** @format */
 
+import handleAPI from '@/apis/handleApi';
 import { CarouselImages } from '@/components';
 import HeadComponent from '@/components/HeadComponent';
 import { appInfo } from '@/constants/appInfos';
 import { ProductModel, SubProductModel } from '@/models/Products';
 import { authSelector } from '@/redux/reducers/authReducer';
-import { addProduct, cartSelector } from '@/redux/reducers/cartReducer';
+import {
+	addProduct,
+	cartSelector,
+	changeCount,
+} from '@/redux/reducers/cartReducer';
 import { VND } from '@/utils/handleCurrency';
 import {
 	Breadcrumb,
@@ -91,10 +96,33 @@ const ProductDetail = ({ pageProps }: any) => {
 					price: item.price,
 					qty: item.qty,
 					productId: item.productId,
-					image: item.imgURL ?? '',
+					image: item.images[0] ?? '',
 				};
 
-				dispatch(addProduct(value));
+				const index = cart.findIndex(
+					(element: any) => element.subProductId === value.subProductId
+				);
+
+				try {
+					if (index !== -1) {
+						await handleAPI({
+							url: `/carts/update?id=${cart[index]._id}`,
+							data: { count: cart[index].count + count },
+							method: 'put',
+						});
+
+						dispatch(changeCount({ id: cart[index]._id, val: count }));
+					} else {
+						const res = await handleAPI({
+							url: '/carts/add-new',
+							data: value,
+							method: 'post',
+						});
+						dispatch(addProduct(res.data.data));
+					}
+				} catch (error) {
+					console.log(error);
+				}
 			} else {
 				message.error('Please choice a product!!!!');
 			}

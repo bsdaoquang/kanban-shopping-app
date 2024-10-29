@@ -46,6 +46,7 @@ const Routers = ({ Component, pageProps }: any) => {
 	const getCardInDatabase = async () => {
 		const api = `/carts`;
 		const res = await handleAPI({ url: api });
+		// console.log(res);
 		if (res.data && res.data.data.length > 0) {
 			dispatch(syncProducts(res.data.data));
 		}
