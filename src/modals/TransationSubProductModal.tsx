@@ -59,7 +59,7 @@ const TransationSubProductModal = (props: Props) => {
 				title: productSelected.title,
 				size: item.size,
 				color: item.color,
-				price: item.price,
+				price: item.discount ? item.discount : item.price,
 				qty: item.qty,
 				productId: item.productId,
 				image: item.images[0] ?? '',

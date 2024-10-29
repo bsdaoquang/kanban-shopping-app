@@ -77,3 +77,7 @@
 .button-groups span{
   padding: 0 12px
 }
+
+.ant-btn-primary span {
+  font-weight: 200;
+}

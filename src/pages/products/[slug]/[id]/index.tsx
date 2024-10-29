@@ -93,7 +93,7 @@ const ProductDetail = ({ pageProps }: any) => {
 					size: item.size,
 					title: detail.title,
 					color: item.color,
-					price: item.price,
+					price: item.discount ? item.discount : item.price,
 					qty: item.qty,
 					productId: item.productId,
 					image: item.images[0] ?? '',

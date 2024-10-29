@@ -1,90 +1,52 @@
 /** @format */
 
-import handleAPI from '@/apis/handleApi';
-import { ButtonRemoveCartItem } from '@/components';
 import HeadComponent from '@/components/HeadComponent';
-import {
-	CartItemModel,
-	cartSelector,
-	changeCount,
-	removeProduct,
-} from '@/redux/reducers/cartReducer';
+import { CartItemModel, cartSelector } from '@/redux/reducers/cartReducer';
 import { VND } from '@/utils/handleCurrency';
-import { Avatar, Button, Card, Space, Table, Typography } from 'antd';
-import Item from 'antd/es/list/Item';
-import { ColumnProps } from 'antd/es/table';
-import { LuMinus } from 'react-icons/lu';
-import { MdAdd } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
+import { Button, Card, Divider, Input, message, Space, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import ListCart from './components/ListCart';
+import handleAPI from '@/apis/handleApi';
 
 const CheckoutPage = () => {
+	const [discountCode, setDiscountCode] = useState('');
+	const [discountValue, setDiscountValue] = useState<{
+		value: number;
+		type: string;
+	}>();
+	const [grandTotal, setGrandTotal] = useState(0);
+	const [isCheckingCode, setIsCheckingCode] = useState(false);
+
 	const carts: CartItemModel[] = useSelector(cartSelector);
 
-	const dispatch = useDispatch();
+	useEffect(() => {
+		if (discountValue && carts.length > 0) {
+			const total = carts.reduce((a, b) => a + b.count * b.price, 0);
 
-	const columns: ColumnProps<CartItemModel>[] = [
-		{
-			key: 'image',
-			dataIndex: 'image',
-			render: (img: string) => <Avatar src={img} size={52} shape='square' />,
-		},
-		{
-			key: 'products',
-			dataIndex: '',
-			title: 'Product',
-			render: (item: CartItemModel) => (
-				<>
-					<Typography.Title level={4} className='m-0'>
-						{item.title}
-					</Typography.Title>
-					<Typography.Text>Size: {item.size}</Typography.Text>
-				</>
-			),
-		},
-		{
-			key: 'price',
-			title: 'Price',
-			dataIndex: 'price',
-			render: (price: number) => VND.format(price),
-		},
-		{
-			key: 'quantity',
-			dataIndex: '',
-			title: 'Quantity',
-			render: (item: CartItemModel) => (
-				<Space className='btn-groups'>
-					<Button
-						onClick={() => dispatch(changeCount({ id: item._id, val: 1 }))}
-						disabled={item.count === item.qty}
-						icon={<MdAdd size={22} className='text-muted' />}
-						type='text'
-					/>
-					<Typography.Text style={{ fontSize: '1.1rem', padding: '0 10px' }}>
-						{`${item.count}`}
-					</Typography.Text>
-					<Button
-						onClick={() => dispatch(changeCount({ id: item._id, val: -1 }))}
-						disabled={item.count === 1}
-						icon={<LuMinus size={22} className='text-muted' />}
-						type='text'
-					/>
-				</Space>
-			),
-			align: 'center',
-		},
-		{
-			key: 'subtotal',
-			title: 'SubTotal',
-			dataIndex: '',
-			render: (item: CartItemModel) => VND.format(item.price * item.count),
-		},
-		{
-			title: '',
-			key: 'action',
-			dataIndex: '',
-			render: (item: CartItemModel) => <ButtonRemoveCartItem item={item} />,
-		},
-	];
+			setGrandTotal(
+				discountValue.type === 'percent'
+					? Math.ceil(total - total * (discountValue.value / 100))
+					: total - discountValue.value
+			);
+		}
+	}, [discountValue]);
+
+	const handleCheckDiscountCode = async () => {
+		const api = `/promotions/check?code=${discountCode}`;
+		setIsCheckingCode(true);
+		try {
+			const res: any = await handleAPI({ url: api });
+			const data = res.data.data;
+			setDiscountValue(data);
+			message.success('Add discount code success');
+		} catch (error: any) {
+			console.log(error);
+			message.error(error.response.data.message);
+		} finally {
+			setIsCheckingCode(false);
+		}
+	};
 
 	return (
 		<div className='container-fluid'>
@@ -92,16 +54,70 @@ const CheckoutPage = () => {
 				<HeadComponent title='Checkout' />
 				<div className='row'>
 					<div className='col-sm-12 col-md-8'>
-						<Typography.Title
-							level={2}
-							style={{ fontWeight: 300 }}
-							className='text-muted'>
-							Checkout
-						</Typography.Title>
-						<Table dataSource={carts} columns={columns} />
+						<ListCart />
 					</div>
-					<div className='col-sm-12 col-md-4 '>
-						<Card>fafafa</Card>
+					<div className='col-sm-12 col-md-4 mt-5 '>
+						<Card
+							title='Subtotal'
+							extra={
+								<Typography.Title level={3} className='m-0'>
+									{VND.format(carts.reduce((a, b) => a + b.count * b.price, 0))}
+								</Typography.Title>
+							}>
+							<div className='mt-3'>
+								<Typography.Text type='secondary'>
+									Discount code
+								</Typography.Text>
+								<Space.Compact className='mb-3'>
+									<Input
+										size='large'
+										placeholder='code'
+										allowClear
+										value={discountCode}
+										onChange={(val) =>
+											setDiscountCode(val.target.value.toUpperCase())
+										}
+									/>
+									<Button
+										loading={isCheckingCode}
+										onClick={handleCheckDiscountCode}
+										disabled={!discountCode}
+										type='primary'
+										size='large'>
+										Apply
+									</Button>
+								</Space.Compact>
+								<Space style={{ justifyContent: 'space-between' }}>
+									<Typography.Text style={{ fontSize: 18 }}>
+										Delivery charge:
+									</Typography.Text>
+									{discountValue && (
+										<Typography.Text
+											style={{
+												fontSize: 18,
+											}}>{`${discountValue?.value}${
+											discountValue?.type === 'percent' ? '%' : ''
+										}`}</Typography.Text>
+									)}
+								</Space>
+								<Divider />
+								<Space style={{ justifyContent: 'space-between' }}>
+									<Typography.Title level={4}>Grand Total:</Typography.Title>
+									<Typography.Title level={4}>{`${VND.format(
+										grandTotal
+									)}`}</Typography.Title>
+								</Space>
+							</div>
+							<div className='mt-3'>
+								<Button
+									type='primary'
+									onClick={() => {}}
+									size='large'
+									style={{ width: '100%' }}>
+									Process to Checkout
+								</Button>
+							</div>
+						</Card>
 					</div>
 				</div>
 			</div>
