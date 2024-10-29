@@ -6,7 +6,10 @@ import { authSelector } from '@/redux/reducers/authReducer';
 import {
 	addProduct,
 	CartItemModel,
+	cartSelector,
+	changeProduct,
 	removeProduct,
+	syncProducts,
 } from '@/redux/reducers/cartReducer';
 import { Button, Modal, Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -23,7 +26,6 @@ const TransationSubProductModal = (props: Props) => {
 
 	const [subProducts, setSubProducts] = useState<SubProductModel[]>([]);
 	const [itemSeclected, setItemSeclected] = useState<SubProductModel>();
-	const [isLoading, setIsLoading] = useState(false);
 
 	const dispatch = useDispatch();
 	const auth = useSelector(authSelector);
@@ -49,37 +51,32 @@ const TransationSubProductModal = (props: Props) => {
 
 	const handleChangeSubProduct = async () => {
 		if (itemSeclected) {
-			// Xoá trong database
-			// Xoá trong store
-			// thêm cái mới vào
+			const item = itemSeclected;
+			const value = {
+				createdBy: auth._id,
+				count: productSelected.count,
+				subProductId: item._id,
+				title: productSelected.title,
+				size: item.size,
+				color: item.color,
+				price: item.price,
+				qty: item.qty,
+				productId: item.productId,
+				image: item.images[0] ?? '',
+			};
 
-			const api = `/carts/remove?id=${productSelected._id}`;
-			setIsLoading(true);
 			try {
-				await handleAPI({ url: api, data: undefined, method: 'delete' });
+				await handleAPI({
+					url: `/carts/update?id=${productSelected._id}`,
+					data: value,
+					method: 'put',
+				});
 
-				const item = itemSeclected;
-				const value = {
-					createdBy: auth._id,
-					count: productSelected.count,
-					subProductId: item._id,
-					title: productSelected.title,
-					size: item.size,
-					color: item.color,
-					price: item.price,
-					qty: item.qty,
-					productId: item.productId,
-					image: item.images[0] ?? '',
-				};
-				dispatch(removeProduct(productSelected));
-				dispatch(addProduct(value));
-
+				dispatch(changeProduct({ id: productSelected._id, data: value }));
 				setItemSeclected(undefined);
 				onClose();
 			} catch (error) {
 				console.log(error);
-			} finally {
-				setIsLoading(false);
 			}
 		}
 	};

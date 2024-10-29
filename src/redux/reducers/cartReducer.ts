@@ -52,6 +52,16 @@ const cartSlice = createSlice({
 
 			state.data = items;
 		},
+		changeProduct: (state, action) => {
+			const { id, data } = action.payload;
+			const items = [...state.data];
+			const index = items.findIndex((element) => element._id === id);
+			if (index !== -1) {
+				items[index] = { ...data, _id: id };
+			}
+
+			state.data = items;
+		},
 		changeCount: (state, action) => {
 			const items = [...state.data];
 			const { id, val } = action.payload;
@@ -71,7 +81,12 @@ const cartSlice = createSlice({
 });
 
 export const cartReducer = cartSlice.reducer;
-export const { addProduct, syncProducts, removeProduct, changeCount } =
-	cartSlice.actions;
+export const {
+	addProduct,
+	syncProducts,
+	removeProduct,
+	changeCount,
+	changeProduct,
+} = cartSlice.actions;
 
 export const cartSelector = (state: any) => state.cartReducer.data;
