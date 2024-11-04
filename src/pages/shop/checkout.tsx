@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ListCart from './components/ListCart';
 import handleAPI from '@/apis/handleApi';
+import ShipingAddress from './components/ShipingAddress';
 
 const CheckoutPage = () => {
 	const [discountCode, setDiscountCode] = useState('');
@@ -17,6 +18,7 @@ const CheckoutPage = () => {
 	}>();
 	const [grandTotal, setGrandTotal] = useState(0);
 	const [isCheckingCode, setIsCheckingCode] = useState(false);
+	const [checkoutStep, setCheckoutStep] = useState('checkout');
 
 	const carts: CartItemModel[] = useSelector(cartSelector);
 
@@ -48,14 +50,28 @@ const CheckoutPage = () => {
 		}
 	};
 
+	const renderComponents = () => {
+		switch (checkoutStep) {
+			case 'address':
+				return (
+					<ShipingAddress
+						onSelectAddress={(val) => {
+							console.log(val);
+							setCheckoutStep('paymentMethod');
+						}}
+					/>
+				);
+			default:
+				return <ListCart />;
+		}
+	};
+
 	return (
 		<div className='container-fluid'>
 			<div className='container mt-4'>
 				<HeadComponent title='Checkout' />
 				<div className='row'>
-					<div className='col-sm-12 col-md-8'>
-						<ListCart />
-					</div>
+					<div className='col-sm-12 col-md-8'>{renderComponents()}</div>
 					<div className='col-sm-12 col-md-4 mt-5 '>
 						<Card
 							title='Subtotal'
@@ -111,7 +127,7 @@ const CheckoutPage = () => {
 							<div className='mt-3'>
 								<Button
 									type='primary'
-									onClick={() => {}}
+									onClick={() => setCheckoutStep('address')}
 									size='large'
 									style={{ width: '100%' }}>
 									Process to Checkout

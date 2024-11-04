@@ -1,15 +1,19 @@
 /** @format */
+
 import handleAPI from '@/apis/handleApi';
 import HeaderComponent from '@/components/HeaderComponent';
 import { localDataNames } from '@/constants/appInfos';
 import { addAuth, authSelector } from '@/redux/reducers/authReducer';
 import { syncProducts } from '@/redux/reducers/cartReducer';
-import { Layout, Spin } from 'antd';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 const { Content, Footer, Header } = Layout;
+
+import { AppProps, Layout, Spin } from 'antd';
+
+import React from 'react';
 
 const Routers = ({ Component, pageProps }: any) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -57,10 +61,9 @@ const Routers = ({ Component, pageProps }: any) => {
 			<Component pageProps={pageProps} />
 		</Content>
 	);
-
 	return isLoading ? (
 		<Spin />
-	) : path && path.includes('auth') ? (
+	) : !auth || !auth.accesstoken ? (
 		<Layout className='bg-white'>{renderContent}</Layout>
 	) : (
 		<Layout className='bg-white'>
@@ -71,3 +74,12 @@ const Routers = ({ Component, pageProps }: any) => {
 };
 
 export default Routers;
+
+// login rule 2
+// /** @format */
+
+// const Routers = ({ Component, pageProps }: any) => {
+
+// };
+
+// export default Routers;
