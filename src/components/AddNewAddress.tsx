@@ -14,10 +14,11 @@ const OPENAPILOCATION = `https://open.oapi.vn/location`;
 
 interface Props {
 	onAddnew: (val: AddressModel) => void;
+	values?: AddressModel;
 }
 
 const AddNewAddress = (props: Props) => {
-	const { onAddnew } = props;
+	const { onAddnew, values } = props;
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [locationData, setLocationData] = useState<{
@@ -43,6 +44,66 @@ const AddNewAddress = (props: Props) => {
 		getProvinces(`provinces`);
 	}, []);
 
+	useEffect(() => {
+		if (values) {
+			form.setFieldsValue(values);
+			setIsDefault(values?.isDefault ?? false);
+			const vals = values.address.split(',');
+
+			handleFormatForms(vals);
+
+			vals.splice(vals.length - 3);
+			form.setFieldValue('houseNo', vals.toString());
+		}
+	}, [values]);
+
+	const handleFormatForms = async (vals: string[]) => {
+		try {
+			const provinceVal = vals[vals.length - 1];
+
+			const provinceSelect = locationData.provinces.find(
+				(element) => element.label === provinceVal.trim()
+			);
+
+			if (provinceSelect) {
+				form.setFieldValue('province', provinceSelect.value);
+				setLocationValues({
+					...locationValues,
+					province: provinceSelect.value,
+				});
+				await getProvinces(`districts`, provinceSelect.value);
+			}
+
+			const districtVal = vals[vals.length - 2];
+			const districtSelect = locationData.districts.find(
+				(element) => element.label === districtVal.trim()
+			);
+
+			if (districtSelect) {
+				setLocationValues({
+					...locationValues,
+					district: districtSelect.value,
+				});
+
+				form.setFieldValue('district', districtSelect.value);
+				await getProvinces(`wards`, districtSelect.value);
+			}
+
+			const wardVal = vals[vals.length - 3];
+
+			const wardSelect = locationData.wards.find(
+				(element) => element.label === wardVal.trim()
+			);
+
+			if (wardSelect) {
+				setLocationValues({ ...locationValues, ward: wardSelect.value });
+				form.setFieldValue('ward', wardSelect.value);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	const getProvinces = async (url: string, id?: string) => {
 		const api = `${OPENAPILOCATION}/${url}${
 			id ? `/${id}` : ''
@@ -60,8 +121,8 @@ const AddNewAddress = (props: Props) => {
 		}
 	};
 
-	const handleAddNewAddress = async (values: any) => {
-		let address = values.houseNo ? `${values.houseNo}` : '';
+	const handleAddNewAddress = async (datas: any) => {
+		let address = datas.houseNo ? `${datas.houseNo}` : '';
 
 		const items: any = { ...locationData };
 
@@ -75,25 +136,28 @@ const AddNewAddress = (props: Props) => {
 				address += `, ${item.label}`;
 			}
 		}
-		delete values.houseNo;
-		values['address'] = address;
+		delete datas.houseNo;
+		datas['address'] = address;
 
-		for (const i in values) {
-			values[i] = values[i] || values[i] === false ? values[i] : '';
+		for (const i in datas) {
+			datas[i] = datas[i] || datas[i] === false ? datas[i] : '';
 		}
 
-		values['isDefault'] = isDefault;
-		values['createdBy'] = auth._id;
+		datas['isDefault'] = isDefault;
+		datas['createdBy'] = auth._id;
 
 		setIsLoading(true);
 		try {
 			const res: any = await handleAPI({
-				url: '/carts/add-new-address',
-				data: values,
-				method: 'post',
+				url: `/carts/${
+					values ? `update-address?id=${values._id}` : 'add-new-address'
+				}`,
+				data: datas,
+				method: values ? 'put' : 'post',
 			});
 
 			onAddnew(res.data.data);
+			form.resetFields();
 		} catch (error) {
 			console.log(error);
 		} finally {

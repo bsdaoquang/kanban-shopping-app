@@ -48,9 +48,10 @@
 }
 
 .shadow-hover:hover{
-  box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.44);
-  -webkit-box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.44);
-  -moz-box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.44);
+  box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.24);
+  -webkit-box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.24);
+  -moz-box-shadow: 10px 9px 49px 1px rgba(0,0,0,0.24);
+  transition: 500ms;
 }
 
 .shadow{
@@ -84,4 +85,12 @@
 
 .ant-steps-item-content{
   margin-top: 0px !important;
+}
+
+.ant-card-body{
+  padding: 16px !important;
+}
+
+.ant-card-actions li{
+  margin: 4px 0 !important;
 }
