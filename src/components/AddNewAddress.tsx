@@ -1,14 +1,24 @@
 /** @format */
 
+import handleAPI from '@/apis/handleApi';
 import { SelectModel } from '@/models/FormModel';
+import { AddressModel } from '@/models/Products';
+import { authSelector } from '@/redux/reducers/authReducer';
 import { replaceName } from '@/utils/replaceName';
 import { Button, Checkbox, Form, Input, Select, Typography } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const OPENAPILOCATION = `https://open.oapi.vn/location`;
 
-const AddNewAddress = () => {
+interface Props {
+	onAddnew: (val: AddressModel) => void;
+}
+
+const AddNewAddress = (props: Props) => {
+	const { onAddnew } = props;
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [locationData, setLocationData] = useState<{
 		provinces: SelectModel[];
@@ -27,6 +37,7 @@ const AddNewAddress = () => {
 	const [isDefault, setIsDefault] = useState(false);
 
 	const [form] = Form.useForm();
+	const auth = useSelector(authSelector);
 
 	useEffect(() => {
 		getProvinces(`provinces`);
@@ -72,8 +83,22 @@ const AddNewAddress = () => {
 		}
 
 		values['isDefault'] = isDefault;
+		values['createdBy'] = auth._id;
 
-		console.log(values);
+		setIsLoading(true);
+		try {
+			const res: any = await handleAPI({
+				url: '/carts/add-new-address',
+				data: values,
+				method: 'post',
+			});
+
+			onAddnew(res.data.data);
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -95,6 +120,7 @@ const AddNewAddress = () => {
 					<Input allowClear />
 				</Form.Item>
 				<Form.Item
+					name={'province'}
 					rules={[{ required: true, message: 'fafa' }]}
 					label='Provice'>
 					<Select
@@ -119,6 +145,7 @@ const AddNewAddress = () => {
 					/>
 				</Form.Item>
 				<Form.Item
+					name={'district'}
 					rules={[{ required: true, message: 'fafa' }]}
 					label='Districts'>
 					<Select
@@ -144,7 +171,10 @@ const AddNewAddress = () => {
 						}
 					/>
 				</Form.Item>
-				<Form.Item rules={[{ required: true, message: 'fafa' }]} label='Wards'>
+				<Form.Item
+					name={'ward'}
+					rules={[{ required: true, message: 'fafa' }]}
+					label='Wards'>
 					<Select
 						disabled={
 							locationData.wards.length === 0 || !locationValues.district

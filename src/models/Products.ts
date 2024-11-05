@@ -44,3 +44,15 @@ export interface SubProductModel {
 	count: number;
 	createdBy: string;
 }
+
+export interface AddressModel {
+	name: string;
+	phoneNumber: string;
+	address: string;
+	createdBy: string;
+	isDefault: boolean;
+	_id: string;
+	createdAt: string;
+	updatedAt: string;
+	__v: number;
+}

@@ -81,3 +81,7 @@
 .ant-btn-primary span {
   font-weight: 200;
 }
+
+.ant-steps-item-content{
+  margin-top: 0px !important;
+}

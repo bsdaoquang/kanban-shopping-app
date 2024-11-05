@@ -1,22 +1,23 @@
 /** @format */
 
 import { AddNewAddress } from '@/components';
+import { AddressModel } from '@/models/Products';
 import { Button, Divider } from 'antd';
 import React, { useState } from 'react';
 
 interface Props {
-	onSelectAddress: (val: any) => void;
+	onSelectAddress: (val: AddressModel) => void;
 }
 
 const ShipingAddress = (props: Props) => {
 	const { onSelectAddress } = props;
 
-	const [addressSelected, setAddressSelected] = useState<any>();
+	const [addressSelected, setAddressSelected] = useState<AddressModel>();
 
 	return (
 		<div>
 			<Button
-				onClick={() => onSelectAddress(addressSelected)}
+				onClick={() => console.log(addressSelected)}
 				size='large'
 				type='primary'>
 				Deliver address
@@ -24,7 +25,7 @@ const ShipingAddress = (props: Props) => {
 
 			<Divider />
 			<div className='mt-4'>
-				<AddNewAddress />
+				<AddNewAddress onAddnew={(val) => console.log(val)} />
 			</div>
 		</div>
 	);

@@ -1,13 +1,25 @@
 /** @format */
 
+import handleAPI from '@/apis/handleApi';
 import HeadComponent from '@/components/HeadComponent';
 import { CartItemModel, cartSelector } from '@/redux/reducers/cartReducer';
 import { VND } from '@/utils/handleCurrency';
-import { Button, Card, Divider, Input, message, Space, Typography } from 'antd';
+import {
+	Button,
+	Card,
+	Divider,
+	Input,
+	message,
+	Space,
+	Steps,
+	Typography,
+} from 'antd';
 import { useEffect, useState } from 'react';
+import { BiCreditCard } from 'react-icons/bi';
+import { FaStar } from 'react-icons/fa6';
+import { HiHome } from 'react-icons/hi';
 import { useSelector } from 'react-redux';
 import ListCart from './components/ListCart';
-import handleAPI from '@/apis/handleApi';
 import ShipingAddress from './components/ShipingAddress';
 
 const CheckoutPage = () => {
@@ -19,6 +31,7 @@ const CheckoutPage = () => {
 	const [grandTotal, setGrandTotal] = useState(0);
 	const [isCheckingCode, setIsCheckingCode] = useState(false);
 	const [checkoutStep, setCheckoutStep] = useState('checkout');
+	const [currentStep, setCurrentStep] = useState(0);
 
 	const carts: CartItemModel[] = useSelector(cartSelector);
 
@@ -51,8 +64,8 @@ const CheckoutPage = () => {
 	};
 
 	const renderComponents = () => {
-		switch (checkoutStep) {
-			case 'address':
+		switch (currentStep) {
+			case 0:
 				return (
 					<ShipingAddress
 						onSelectAddress={(val) => {
@@ -71,7 +84,50 @@ const CheckoutPage = () => {
 			<div className='container mt-4'>
 				<HeadComponent title='Checkout' />
 				<div className='row'>
-					<div className='col-sm-12 col-md-8'>{renderComponents()}</div>
+					<div className='col-sm-12 col-md-8'>
+						{checkoutStep !== 'checkout' && (
+							<div className='mb-4'>
+								<Steps
+									current={currentStep}
+									labelPlacement='vertical'
+									onChange={(val) => setCurrentStep(val)}
+									items={[
+										{
+											title: 'Address',
+											icon: (
+												<Button
+													icon={<HiHome size={18} />}
+													type={currentStep === 0 ? 'primary' : `text`}
+													onClick={() => setCurrentStep(0)}
+												/>
+											),
+										},
+										{
+											title: 'Payment Method',
+											icon: (
+												<Button
+													icon={<BiCreditCard size={20} />}
+													type={currentStep === 1 ? 'primary' : `text`}
+													onClick={() => setCurrentStep(1)}
+												/>
+											),
+										},
+										{
+											title: 'Reviews',
+											icon: (
+												<Button
+													icon={<FaStar size={18} />}
+													type={currentStep === 2 ? 'primary' : `text`}
+													onClick={undefined}
+												/>
+											),
+										},
+									]}
+								/>
+							</div>
+						)}
+						{renderComponents()}
+					</div>
 					<div className='col-sm-12 col-md-4 mt-5 '>
 						<Card
 							title='Subtotal'
