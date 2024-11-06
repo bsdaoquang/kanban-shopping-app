@@ -34,6 +34,7 @@ const Routers = ({ Component, pageProps }: any) => {
 		const res = localStorage.getItem(localDataNames.authData);
 		res && dispatch(addAuth(JSON.parse(res)));
 	};
+
 	const getDatabaseDatas = async () => {
 		setIsLoading(true);
 		try {
@@ -49,11 +50,13 @@ const Routers = ({ Component, pageProps }: any) => {
 
 	const getCardInDatabase = async () => {
 		const api = `/carts`;
-		const res = await handleAPI({ url: api });
-		// console.log(res);
-		if (res.data && res.data.data.length > 0) {
-			dispatch(syncProducts(res.data.data));
-		}
+		try {
+			const res = await handleAPI({ url: api });
+
+			if (res.data && res.data.data.length > 0) {
+				dispatch(syncProducts(res.data.data));
+			}
+		} catch (error) {}
 	};
 
 	const renderContent = (
@@ -61,6 +64,7 @@ const Routers = ({ Component, pageProps }: any) => {
 			<Component pageProps={pageProps} />
 		</Content>
 	);
+
 	return isLoading ? (
 		<Spin />
 	) : !auth || !auth.accesstoken ? (

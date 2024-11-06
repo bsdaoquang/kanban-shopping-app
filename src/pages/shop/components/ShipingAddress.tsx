@@ -155,7 +155,7 @@ const ShipingAddress = (props: Props) => {
 
 			<Button
 				className='mt-4'
-				onClick={() => console.log(addressSelected)}
+				onClick={() => onSelectAddress(addressSelected as AddressModel)}
 				size='large'
 				type='primary'>
 				Deliver address

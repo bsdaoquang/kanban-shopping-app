@@ -21,6 +21,14 @@ import { HiHome } from 'react-icons/hi';
 import { useSelector } from 'react-redux';
 import ListCart from './components/ListCart';
 import ShipingAddress from './components/ShipingAddress';
+import PaymentMethod from './components/PaymentMethod';
+import Reviews from './components/reviews';
+import { AddressModel } from '@/models/Products';
+
+interface PaymentDetail {
+	address: AddressModel;
+	paymentMethod: any;
+}
 
 const CheckoutPage = () => {
 	const [discountCode, setDiscountCode] = useState('');
@@ -31,7 +39,8 @@ const CheckoutPage = () => {
 	const [grandTotal, setGrandTotal] = useState(0);
 	const [isCheckingCode, setIsCheckingCode] = useState(false);
 	const [checkoutStep, setCheckoutStep] = useState('checkout');
-	const [currentStep, setCurrentStep] = useState(0);
+	const [currentStep, setCurrentStep] = useState<number>();
+	const [paymentDetail, setPaymentDetail] = useState<any>();
 
 	const carts: CartItemModel[] = useSelector(cartSelector);
 
@@ -69,11 +78,22 @@ const CheckoutPage = () => {
 				return (
 					<ShipingAddress
 						onSelectAddress={(val) => {
-							console.log(val);
-							setCheckoutStep('paymentMethod');
+							setPaymentDetail({ ...paymentDetail, address: val });
+							setCurrentStep(1);
 						}}
 					/>
 				);
+			case 1:
+				return (
+					<PaymentMethod
+						onContinue={(val) => {
+							console.log(val);
+							setCurrentStep(2);
+						}}
+					/>
+				);
+			case 2:
+				return <Reviews />;
 			default:
 				return <ListCart />;
 		}
@@ -85,47 +105,46 @@ const CheckoutPage = () => {
 				<HeadComponent title='Checkout' />
 				<div className='row'>
 					<div className='col-sm-12 col-md-8'>
-						{checkoutStep !== 'checkout' && (
-							<div className='mb-4'>
-								<Steps
-									current={currentStep}
-									labelPlacement='vertical'
-									onChange={(val) => setCurrentStep(val)}
-									items={[
-										{
-											title: 'Address',
-											icon: (
-												<Button
-													icon={<HiHome size={18} />}
-													type={currentStep === 0 ? 'primary' : `text`}
-													onClick={() => setCurrentStep(0)}
-												/>
-											),
-										},
-										{
-											title: 'Payment Method',
-											icon: (
-												<Button
-													icon={<BiCreditCard size={20} />}
-													type={currentStep === 1 ? 'primary' : `text`}
-													onClick={() => setCurrentStep(1)}
-												/>
-											),
-										},
-										{
-											title: 'Reviews',
-											icon: (
-												<Button
-													icon={<FaStar size={18} />}
-													type={currentStep === 2 ? 'primary' : `text`}
-													onClick={undefined}
-												/>
-											),
-										},
-									]}
-								/>
-							</div>
-						)}
+						<div className='mb-4'>
+							<Steps
+								current={currentStep}
+								labelPlacement='vertical'
+								onChange={(val) => setCurrentStep(val)}
+								items={[
+									{
+										title: 'Address',
+										icon: (
+											<Button
+												icon={<HiHome size={18} />}
+												type={currentStep === 0 ? 'primary' : `text`}
+												onClick={() => setCurrentStep(0)}
+											/>
+										),
+									},
+									{
+										title: 'Payment Method',
+										icon: (
+											<Button
+												icon={<BiCreditCard size={20} />}
+												type={currentStep === 1 ? 'primary' : `text`}
+												onClick={() => setCurrentStep(1)}
+											/>
+										),
+									},
+									{
+										title: 'Reviews',
+										icon: (
+											<Button
+												icon={<FaStar size={18} />}
+												type={currentStep === 2 ? 'primary' : `text`}
+												onClick={undefined}
+											/>
+										),
+									},
+								]}
+							/>
+						</div>
+
 						{renderComponents()}
 					</div>
 					<div className='col-sm-12 col-md-4 mt-5 '>
@@ -183,7 +202,7 @@ const CheckoutPage = () => {
 							<div className='mt-3'>
 								<Button
 									type='primary'
-									onClick={() => setCheckoutStep('address')}
+									onClick={() => setCurrentStep(0)}
 									size='large'
 									style={{ width: '100%' }}>
 									Process to Checkout
