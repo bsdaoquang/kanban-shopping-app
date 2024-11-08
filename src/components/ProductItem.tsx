@@ -39,7 +39,7 @@ const ProductItem = (props: Props) => {
 			key={item._id}
 			className='col-sm-6 col-md-4 col-lg-3 mb-4 product-item'>
 			<div>
-				{item.images.length > 0 ? (
+				{item.images && item.images.length > 0 ? (
 					<img
 						style={{
 							width: '100%',
@@ -100,7 +100,7 @@ const ProductItem = (props: Props) => {
 				<Paragraph style={{ fontWeight: 'bold' }}>{item.supplier}</Paragraph>
 				<Paragraph>{item.title}</Paragraph>
 				<Paragraph style={{ fontSize: '1.1em' }}>
-					{item.price.length > 0
+					{item.price && item.price.length > 0
 						? `${VND.format(item.price[0])} - ${VND.format(item.price[1])}`
 						: ''}
 				</Paragraph>

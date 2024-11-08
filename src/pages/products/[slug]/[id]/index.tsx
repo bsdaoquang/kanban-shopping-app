@@ -1,7 +1,7 @@
 /** @format */
 
 import handleAPI from '@/apis/handleApi';
-import { CarouselImages } from '@/components';
+import { CarouselImages, ProductItem, TabbarComponent } from '@/components';
 import HeadComponent from '@/components/HeadComponent';
 import { appInfo } from '@/constants/appInfos';
 import { ProductModel, SubProductModel } from '@/models/Products';
@@ -18,6 +18,7 @@ import {
 	message,
 	Rate,
 	Space,
+	Tabs,
 	Tag,
 	Typography,
 } from 'antd';
@@ -38,7 +39,8 @@ const ProductDetail = ({ pageProps }: any) => {
 	}: {
 		product: ProductModel;
 		subProducts: SubProductModel[];
-	} = pageProps.data.data;
+	} = pageProps.data.result.data;
+	const relatedProducts = pageProps.data.itemCats.data;
 
 	const [detail, setdetail] = useState<ProductModel>(product);
 	const [subProductSelected, setSubProductSelected] =
@@ -130,8 +132,6 @@ const ProductDetail = ({ pageProps }: any) => {
 			router.push(`/auth/login?productId=${detail._id}&slug=${detail.slug}`);
 		}
 	};
-
-	// @daoquang-livecode
 
 	const renderButtonGroup = () => {
 		const item = cart.find(
@@ -331,11 +331,58 @@ const ProductDetail = ({ pageProps }: any) => {
 								<div className='mt-5'>
 									<Space>
 										{renderButtonGroup()}
-
 										<Button size='large' icon={<IoHeartOutline size={22} />} />
 									</Space>
 								</div>
 							</div>
+						</div>
+					</div>
+					<div className='mt-4'>
+						<Tabs
+							items={[
+								{
+									key: '1',
+									label: 'Description',
+									children: (
+										<>
+											<p>
+												Lorem ipsum dolor, sit amet consectetur adipisicing
+												elit. Dolor temporibus esse nam est, velit quae tempora.
+												Voluptatum laborum facere consequatur. Cum, et labore id
+												aut nisi veniam. Et, dolor! Tempora?
+											</p>
+										</>
+									),
+								},
+								{
+									key: '2',
+									label: 'Additional Infomations',
+									children: (
+										<>
+											<p>Additional Infomations</p>
+										</>
+									),
+								},
+								{
+									key: '3',
+									label: 'Reviews',
+									children: (
+										<>
+											<p>Reviews</p>
+										</>
+									),
+								},
+							]}
+						/>
+					</div>
+					<div className='mt-4'>
+						<TabbarComponent title='Related products' />
+						<div className='row'>
+							{relatedProducts.length > 0 &&
+								relatedProducts.map((item: ProductModel) => (
+									<ProductItem item={item} key={item._id} />
+									// </div>
+								))}
 						</div>
 					</div>
 				</div>
@@ -350,11 +397,16 @@ export const getStaticProps = async (context: any) => {
 	const res = await fetch(
 		`${appInfo.baseUrl}/products/detail?id=${context.params.id}`
 	);
+
+	const resCats = await fetch(
+		`${appInfo.baseUrl}/products/get-related-products?id=${context.params.id}`
+	);
 	const result = await res.json();
+	const itemCats = await resCats.json();
 	try {
 		return {
 			props: {
-				data: result,
+				data: { result, itemCats },
 			},
 		};
 	} catch (error) {

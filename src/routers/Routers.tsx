@@ -14,6 +14,7 @@ const { Content, Footer, Header } = Layout;
 import { AppProps, Layout, Spin } from 'antd';
 
 import React from 'react';
+import { cookies } from 'next/headers';
 
 const Routers = ({ Component, pageProps }: any) => {
 	const [isLoading, setIsLoading] = useState(false);
