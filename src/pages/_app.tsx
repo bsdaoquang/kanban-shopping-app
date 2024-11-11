@@ -1,6 +1,5 @@
 /** @format */
 
-// import store from '@/redux/store';
 import store from '@/redux/store';
 import Routers from '@/routers/Routers';
 import '@/styles/globals.css';

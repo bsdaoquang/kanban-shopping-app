@@ -94,3 +94,7 @@
 .ant-card-actions li{
   margin: 4px 0 !important;
 }
+
+.review-title h4{
+  margin-block-end: 0 !important
+}

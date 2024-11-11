@@ -2,7 +2,7 @@
 
 import handleAPI from '@/apis/handleApi';
 import { addAuth } from '@/redux/reducers/authReducer';
-import { Button, Form, Input, message, Typography } from 'antd';
+import { Button, Divider, Form, Input, message, Typography } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -120,6 +120,10 @@ const Login = () => {
 										onClick={() => form.submit()}>
 										Login
 									</Button>
+								</div>
+								<Divider />
+								<div className='mt-3 text-center'>
+									<Link href={`/auth/signup`}>Sign Up</Link>
 								</div>
 							</div>
 						</div>

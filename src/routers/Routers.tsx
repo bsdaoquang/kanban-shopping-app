@@ -11,10 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const { Content, Footer, Header } = Layout;
 
-import { AppProps, Layout, Spin } from 'antd';
-
-import React from 'react';
-import { cookies } from 'next/headers';
+import { Layout, Spin } from 'antd';
 
 const Routers = ({ Component, pageProps }: any) => {
 	const [isLoading, setIsLoading] = useState(false);

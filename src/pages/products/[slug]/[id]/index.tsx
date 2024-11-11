@@ -1,7 +1,12 @@
 /** @format */
 
 import handleAPI from '@/apis/handleApi';
-import { CarouselImages, ProductItem, TabbarComponent } from '@/components';
+import {
+	CarouselImages,
+	ProductItem,
+	Reviews,
+	TabbarComponent,
+} from '@/components';
 import HeadComponent from '@/components/HeadComponent';
 import { appInfo } from '@/constants/appInfos';
 import { ProductModel, SubProductModel } from '@/models/Products';
@@ -15,6 +20,7 @@ import { VND } from '@/utils/handleCurrency';
 import {
 	Breadcrumb,
 	Button,
+	Empty,
 	message,
 	Rate,
 	Space,
@@ -23,6 +29,7 @@ import {
 	Typography,
 } from 'antd';
 import Link from 'next/link';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { IoAddSharp, IoHeartOutline } from 'react-icons/io5';
@@ -52,6 +59,8 @@ const ProductDetail = ({ pageProps }: any) => {
 
 	const auth = useSelector(authSelector);
 	const router = useRouter();
+	const params = useParams();
+	const id = params ? params.id : '';
 
 	const cart: SubProductModel[] = useSelector(cartSelector);
 	const dispatch = useDispatch();
@@ -366,10 +375,10 @@ const ProductDetail = ({ pageProps }: any) => {
 								{
 									key: '3',
 									label: 'Reviews',
-									children: (
-										<>
-											<p>Reviews</p>
-										</>
+									children: id ? (
+										<Reviews productId={id as string} />
+									) : (
+										<Empty />
 									),
 								},
 							]}

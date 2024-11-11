@@ -16,17 +16,6 @@ const nextConfig = {
 		'rc-tree',
 		'rc-table',
 	],
-	// images: {
-	// 	remotePatterns: [
-	// 		{
-	// 			protocol: 'https',
-	// 			hostname: 'example.com',
-	// 			port: '',
-	// 			pathname: '/account123/**',
-	// 			search: '',
-	// 		},
-	// 	],
-	// },
 };
 
 export default nextConfig;
