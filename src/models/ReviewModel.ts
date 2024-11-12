@@ -6,10 +6,11 @@ export interface ReviewModel {
 	createdBy: string;
 	parentId: string;
 	images: any[];
-	like: number;
+	like: string[];
 	isDeleted: boolean;
 	_id: string;
 	createdAt: string;
 	updatedAt: string;
+	dislike: string[];
 	__v: number;
 }

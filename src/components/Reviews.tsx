@@ -113,7 +113,7 @@ const Reviews = (props: Props) => {
 			{isGetting ? (
 				<Spin />
 			) : (
-				<ListReviews datas={reviews} parentId={productId} />
+				<ListReviews isParent datas={reviews} parentId={productId} />
 			)}
 
 			<div className='row'>

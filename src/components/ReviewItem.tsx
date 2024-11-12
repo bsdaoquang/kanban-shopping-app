@@ -10,14 +10,17 @@ import { useSelector } from 'react-redux';
 import ListReviews from './ListReviews';
 import { ProfileModel } from '@/models/ProfileModel';
 import { BiUser } from 'react-icons/bi';
+import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 
 interface Props {
 	item: ReviewModel;
 	onAddnew: () => void;
+	isParent?: boolean;
+	onChangeLike: (id: string, type: 'like' | 'dislike') => void;
 }
 
 const ReviewItem = (props: Props) => {
-	const { item, onAddnew } = props;
+	const { item, onAddnew, isParent, onChangeLike } = props;
 	const [content, setContent] = useState('');
 	const [isReply, setIsReply] = useState(false);
 	const [profile, setProfile] = useState<ProfileModel>();
@@ -42,13 +45,26 @@ const ReviewItem = (props: Props) => {
 				method: 'post',
 			});
 
-			console.log(res);
 			setContent('');
 			onAddnew();
 		} catch (error) {
 			console.log(error);
 		}
 	};
+
+	/*
+		like & dislike 
+
+		- bao nhiêu like và bao nhieu dislike 
+
+		- nếu người này like 
+			nếu đã dislike thì phải bỏ dislike 
+		
+		- nếu dislike 
+			nếu đã like thì bỏ like đi 
+
+		
+	*/
 
 	const handleGetProfile = async () => {
 		const api = `/customers/profile?id=${item.createdBy}`;
@@ -83,7 +99,9 @@ const ReviewItem = (props: Props) => {
 					)
 				}
 				description={
-					<Rate style={{ fontSize: 22 }} defaultValue={item.star} disabled />
+					isParent && (
+						<Rate style={{ fontSize: 22 }} defaultValue={item.star} disabled />
+					)
 				}
 			/>
 
@@ -94,30 +112,71 @@ const ReviewItem = (props: Props) => {
 					<Typography.Text>{item.createdAt}</Typography.Text>
 				</Space>
 			</>
-			<div className='ml-4'>
-				<ListReviews parentId={item._id} />
+			<div className='mb-3 mt-2'>
+				<Space>
+					<Button
+						className='p-0'
+						size='small'
+						type='link'
+						onClick={() => setIsReply(!isReply)}>
+						Reply
+					</Button>
+					<Button
+						disabled={item.like.includes(auth._id)}
+						size='small'
+						className={
+							item.like.includes(auth._id) ? 'text-info' : 'text-muted'
+						}
+						onClick={() => onChangeLike(item._id, 'like')}
+						type='text'
+						icon={
+							<FaThumbsUp
+								size={14}
+								className={
+									item.like.includes(auth._id) ? 'text-info' : 'text-muted'
+								}
+							/>
+						}>
+						Like ({item.like ? item.like.length : 0})
+					</Button>
+					<Button
+						size='small'
+						className={'text-muted'}
+						onClick={() => onChangeLike(item._id, 'dislike')}
+						type='text'
+						icon={<FaThumbsDown size={14} className={'text-muted'} />}>
+						Dislike ({item.dislike ? item.dislike.length : 0})
+					</Button>
+				</Space>
 			</div>
-
 			{isReply && (
-				<Input
-					onPressEnter={handleReply}
-					value={content}
-					onChange={(val) => setContent(val.target.value)}
-					allowClear
-					suffix={
-						<Button
-							type='text'
-							icon={
-								<IoIosSend
-									className='text-info'
-									size={24}
-									onClick={handleReply}
+				<div className='row'>
+					<div className='col-sm-12 col-md-8 col-lg-6'>
+						<Input
+							size='small'
+							onPressEnter={handleReply}
+							value={content}
+							onChange={(val) => setContent(val.target.value)}
+							allowClear
+							suffix={
+								<Button
+									type='text'
+									icon={
+										<IoIosSend
+											className='text-info'
+											size={24}
+											onClick={handleReply}
+										/>
+									}
 								/>
 							}
 						/>
-					}
-				/>
+					</div>
+				</div>
 			)}
+			<div className='ml-4'>
+				<ListReviews parentId={item._id} />
+			</div>
 		</List.Item>
 	);
 };
