@@ -8,17 +8,22 @@ import ReviewItem from './ReviewItem';
 
 interface Props {
 	parentId: string;
+	datas?: ReviewModel[];
 }
 
 const ListReviews = (props: Props) => {
-	const { parentId } = props;
+	const { parentId, datas } = props;
 	const [isLoading, setIsLoading] = useState(false);
 	const [reviews, setReviews] = useState<ReviewModel[]>([]);
 	const [isLimit, setIsLimit] = useState(true);
 
 	useEffect(() => {
-		getAllReviews();
-	}, [parentId]);
+		if (datas) {
+			setReviews(datas);
+		} else {
+			getAllReviews();
+		}
+	}, [parentId, datas]);
 
 	const getAllReviews = async () => {
 		const api = `/reviews?id=${parentId}${isLimit ? `&limit=5` : ''}`;
@@ -40,7 +45,7 @@ const ListReviews = (props: Props) => {
 			itemLayout='vertical'
 			dataSource={reviews}
 			renderItem={(item) => (
-				<div className='ml-4'>
+				<div className=''>
 					<ReviewItem item={item} onAddnew={getAllReviews} />
 				</div>
 			)}

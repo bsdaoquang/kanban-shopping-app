@@ -34,9 +34,26 @@ const Reviews = (props: Props) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [isGetting, setIsGetting] = useState(false);
+	const [reviews, setReviews] = useState<ReviewModel[]>([]);
+
+	useEffect(() => {
+		getAllReviews();
+	}, []);
 
 	const auth = useSelector(authSelector);
 
+	const getAllReviews = async () => {
+		const api = `/reviews?id=${productId}`;
+		setIsLoading(true);
+		try {
+			const res = await handleAPI({ url: api });
+			setReviews(res.data.data);
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
 	const handleSubmitReview = async () => {
 		const data = {
 			createdBy: auth._id,
@@ -78,6 +95,7 @@ const Reviews = (props: Props) => {
 			setStarScore(0);
 			setcomment('');
 			setFileList([]);
+			getAllReviews();
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -92,7 +110,11 @@ const Reviews = (props: Props) => {
 	return (
 		<div className='mb-5'>
 			{/* list reviews */}
-			{isGetting ? <Spin /> : <ListReviews parentId={productId} />}
+			{isGetting ? (
+				<Spin />
+			) : (
+				<ListReviews datas={reviews} parentId={productId} />
+			)}
 
 			<div className='row'>
 				<div className='col-sm-12 col-md-8 col-lg-6'>

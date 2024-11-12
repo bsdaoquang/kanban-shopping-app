@@ -2,7 +2,6 @@
 
 import { ProductItem, Section, TabbarComponent } from '@/components';
 import HeadComponent from '@/components/HeadComponent';
-import { appInfo } from '@/constants/appInfos';
 import { CategoyModel, ProductModel } from '@/models/Products';
 import { PromotionModel } from '@/models/PromotionModel';
 import { Button, Carousel, Space, Typography } from 'antd';

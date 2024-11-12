@@ -81,7 +81,9 @@ const SignUp = () => {
 		if (numsOfCode.length >= 6) {
 			let code = numsOfCode.join('');
 
-			const api = `/customers/verify?id=${signValues._id}&code=${code}`;
+			const api = `/customers/verify?id=${
+				signValues._id
+			}&code=${code.toUpperCase()}`;
 			try {
 				const res = await handleAPI({
 					url: api,

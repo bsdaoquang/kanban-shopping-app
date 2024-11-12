@@ -233,6 +233,7 @@ const ProductDetail = ({ pageProps }: any) => {
 								onClick={(val) => setSubProductSelected(val)}
 							/>
 						</div>
+
 						<div className='col'>
 							<div className='row'>
 								<div className='col'>

@@ -4,10 +4,12 @@ import handleAPI from '@/apis/handleApi';
 import { ReviewModel } from '@/models/ReviewModel';
 import { authSelector } from '@/redux/reducers/authReducer';
 import { Avatar, Button, Input, List, Rate, Space, Typography } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IoIosSend } from 'react-icons/io';
 import { useSelector } from 'react-redux';
 import ListReviews from './ListReviews';
+import { ProfileModel } from '@/models/ProfileModel';
+import { BiUser } from 'react-icons/bi';
 
 interface Props {
 	item: ReviewModel;
@@ -18,8 +20,13 @@ const ReviewItem = (props: Props) => {
 	const { item, onAddnew } = props;
 	const [content, setContent] = useState('');
 	const [isReply, setIsReply] = useState(false);
+	const [profile, setProfile] = useState<ProfileModel>();
 
 	const auth = useSelector(authSelector);
+
+	useEffect(() => {
+		handleGetProfile();
+	}, [item]);
 
 	const handleReply = async () => {
 		const api = `/reviews/add-new`;
@@ -43,35 +50,54 @@ const ReviewItem = (props: Props) => {
 		}
 	};
 
+	const handleGetProfile = async () => {
+		const api = `/customers/profile?id=${item.createdBy}`;
+
+		try {
+			const res = await handleAPI({ url: api });
+			setProfile(res.data.data);
+		} catch (error) {
+			console.log(console.log(error));
+		}
+	};
+
 	return (
-		<List.Item
-			key={item._id}
-			actions={[
-				<Space>
-					<Typography.Text type='secondary'>Posted on:</Typography.Text>
-					<Typography.Text>{item.createdAt}</Typography.Text>
-				</Space>,
-			]}>
+		<List.Item key={item._id}>
 			<List.Item.Meta
 				className='review-title'
-				title={item.createdBy === auth._id ? 'Me' : 'Name'}
+				title={
+					item.createdBy === auth._id
+						? 'Me'
+						: `${profile?.firstName ?? ''} ${profile?.lastName ?? ''}`
+				}
 				avatar={
-					<Avatar
-						size={40}
-						src={
-							item.createdBy === auth._id && auth.photoUrl ? auth.photoUrl : ''
-						}
-					/>
+					(profile && profile.photoURL) || auth.photoURL ? (
+						<Avatar
+							size={40}
+							src={profile?.photoURL ? profile.photoURL : auth.photoURL}
+						/>
+					) : (
+						<Avatar size={40}>
+							<BiUser style={{ marginBottom: -4 }} size={24} />
+						</Avatar>
+					)
 				}
 				description={
 					<Rate style={{ fontSize: 22 }} defaultValue={item.star} disabled />
 				}
 			/>
-			{item.comment}
-			<ListReviews parentId={item._id} />
-			<Button size='small' type='link' onClick={() => setIsReply(!isReply)}>
-				Reply
-			</Button>
+
+			<>
+				<div>{item.comment}</div>
+				<Space>
+					<Typography.Text type='secondary'>Posted on:</Typography.Text>
+					<Typography.Text>{item.createdAt}</Typography.Text>
+				</Space>
+			</>
+			<div className='ml-4'>
+				<ListReviews parentId={item._id} />
+			</div>
+
 			{isReply && (
 				<Input
 					onPressEnter={handleReply}
