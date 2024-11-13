@@ -57,31 +57,20 @@ const Routers = ({ Component, pageProps }: any) => {
 		} catch (error) {}
 	};
 
-	const renderContent = (
-		<Content>
-			<Component pageProps={pageProps} />
-		</Content>
-	);
-
 	return isLoading ? (
 		<Spin />
 	) : !auth || !auth.accesstoken ? (
-		<Layout className='bg-white'>{renderContent}</Layout>
+		<Layout className='bg-white'>
+			<Component pageProps={pageProps} />
+		</Layout>
 	) : (
 		<Layout className='bg-white'>
 			<HeaderComponent />
-			<div>{renderContent}</div>
+			<Content>
+				<Component pageProps={pageProps} />
+			</Content>
 		</Layout>
 	);
 };
 
 export default Routers;
-
-// login rule 2
-// /** @format */
-
-// const Routers = ({ Component, pageProps }: any) => {
-
-// };
-
-// export default Routers;
