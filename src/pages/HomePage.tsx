@@ -20,7 +20,7 @@ interface Props {
 
 const HomePage = (props: Props) => {
 	// const { promotions, categories, bestSellers } = props;
-	const { categories } = props;
+	const { promotions, categories, bestSellers } = props;
 
 	const [numOfColumn, setNumOfColumn] = useState<number>();
 	const [catsArrays, setCatsArrays] = useState<
@@ -71,7 +71,7 @@ const HomePage = (props: Props) => {
 	return (
 		<>
 			<HeadComponent title='Home' />
-			{/* <div
+			<div
 				className='container-fluid d-none d-md-block'
 				style={{ backgroundColor: '#f3f3f3' }}>
 				<div className='container'>
@@ -134,7 +134,7 @@ const HomePage = (props: Props) => {
 						</Carousel>
 					)}
 				</div>
-			</div> */}
+			</div>
 			<div className='container'>
 				<Section>
 					<TabbarComponent
@@ -162,7 +162,7 @@ const HomePage = (props: Props) => {
 								<div key={`array${Math.floor(Math.random() * 10000)}`}>
 									<div className='row'>
 										{array.values.map((item, index) => (
-											<div className='col'>
+											<div className='col-3' key={`index${index}`}>
 												{
 													<div>
 														<img
@@ -204,7 +204,7 @@ const HomePage = (props: Props) => {
 							))}
 					</Carousel>
 				</Section>
-				{/* <Section>
+				<Section>
 					<TabbarComponent title='Our Bestseller' />
 					<div className='row'>
 						{bestSellers &&
@@ -212,7 +212,7 @@ const HomePage = (props: Props) => {
 								<ProductItem item={item} key={item._id} />
 							))}
 					</div>
-				</Section> */}
+				</Section>
 			</div>
 		</>
 	);

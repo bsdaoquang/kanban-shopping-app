@@ -69,7 +69,7 @@ const HeaderComponent = () => {
 									{
 										label: (
 											<Dropdown
-												placement='bottomCenter'
+												placement='bottom'
 												dropdownRender={() => (
 													<CategoriesListCard type='card' />
 												)}>

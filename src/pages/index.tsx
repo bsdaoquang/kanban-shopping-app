@@ -14,7 +14,9 @@ import { Empty, Skeleton } from 'antd';
 const Home = (data: any) => {
 	const pageProps = data.pageProps;
 
-	const [values, setValues] = useState<any>();
+	const [promotions, setPromotions] = useState<PromotionModel[]>([]);
+	const [categories, setCategories] = useState<CategoyModel[]>([]);
+	const [bestSellers, setBestSellers] = useState<ProductModel[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
@@ -24,9 +26,9 @@ const Home = (data: any) => {
 	const getDatas = async () => {
 		setIsLoading(true);
 		try {
-			// await getPromotions();
+			await getPromotions();
 			await getCategories();
-			// await getProducts();
+			await getProducts();
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -34,44 +36,30 @@ const Home = (data: any) => {
 		}
 	};
 
-	const handleChangeValues = (key: string, vals: any) => {
-		const items = { ...values };
-		items[key] = vals;
-		setValues(items);
-	};
-
 	const getPromotions = async () => {
 		const res = await handleAPI({ url: `/promotions?limit=5` });
 
-		res &&
-			res.data &&
-			res.data.data &&
-			handleChangeValues('promotions', res.data.data);
+		res && res.data && res.data.data && setPromotions(res.data.data);
 	};
 
 	const getCategories = async () => {
 		const res = await handleAPI({ url: `/products/get-categories` });
-		res &&
-			res.data &&
-			res.data.data &&
-			res.data.data.length > 0 &&
-			handleChangeValues('categories', res.data.data);
+		res && res.data && res.data.data && setCategories(res.data.data);
 	};
 
 	const getProducts = async () => {
 		const res = await handleAPI({ url: `/products/get-best-seller` });
-		res &&
-			res.data &&
-			res.data.data &&
-			handleChangeValues('bestSeller', res.data.data);
+		res && res.data && res.data.data && setBestSellers(res.data.data);
 	};
 
 	return isLoading ? (
 		<Skeleton />
-	) : values && values.categories ? (
-		<HomePage {...values} />
 	) : (
-		<Empty />
+		<HomePage
+			promotions={promotions}
+			categories={categories}
+			bestSellers={bestSellers}
+		/>
 	);
 };
 
