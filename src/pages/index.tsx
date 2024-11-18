@@ -1,18 +1,78 @@
 /** @format */
 
 import { authSelector } from '@/redux/reducers/authReducer';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import HomePage from './HomePage';
 import { appInfo } from '@/constants/appInfos';
 import Login from './auth/login';
+import { PromotionModel } from '@/models/PromotionModel';
+import { CategoyModel, ProductModel } from '@/models/Products';
+import handleAPI from '@/apis/handleApi';
+import { Empty, Skeleton } from 'antd';
 
 const Home = (data: any) => {
 	const pageProps = data.pageProps;
 
-	const auth = useSelector(authSelector);
+	const [values, setValues] = useState<any>();
+	const [isLoading, setIsLoading] = useState(false);
 
-	return <HomePage {...pageProps} />;
+	useEffect(() => {
+		getDatas();
+	}, []);
+
+	const getDatas = async () => {
+		setIsLoading(true);
+		try {
+			// await getPromotions();
+			await getCategories();
+			// await getProducts();
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const handleChangeValues = (key: string, vals: any) => {
+		const items = { ...values };
+		items[key] = vals;
+		setValues(items);
+	};
+
+	const getPromotions = async () => {
+		const res = await handleAPI({ url: `/promotions?limit=5` });
+
+		res &&
+			res.data &&
+			res.data.data &&
+			handleChangeValues('promotions', res.data.data);
+	};
+
+	const getCategories = async () => {
+		const res = await handleAPI({ url: `/products/get-categories` });
+		res &&
+			res.data &&
+			res.data.data &&
+			res.data.data.length > 0 &&
+			handleChangeValues('categories', res.data.data);
+	};
+
+	const getProducts = async () => {
+		const res = await handleAPI({ url: `/products/get-best-seller` });
+		res &&
+			res.data &&
+			res.data.data &&
+			handleChangeValues('bestSeller', res.data.data);
+	};
+
+	return isLoading ? (
+		<Skeleton />
+	) : values && values.categories ? (
+		<HomePage {...values} />
+	) : (
+		<Empty />
+	);
 };
 
 export default Home;

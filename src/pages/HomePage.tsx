@@ -19,9 +19,10 @@ interface Props {
 }
 
 const HomePage = (props: Props) => {
-	const { promotions, categories, bestSellers } = props;
+	// const { promotions, categories, bestSellers } = props;
+	const { categories } = props;
 
-	const [numOfColumn, setNumOfColumn] = useState(4);
+	const [numOfColumn, setNumOfColumn] = useState<number>();
 	const [catsArrays, setCatsArrays] = useState<
 		{
 			key: string;
@@ -38,6 +39,7 @@ const HomePage = (props: Props) => {
 			: [];
 
 	useEffect(() => {
+		setNumOfColumn(4);
 		window.addEventListener('resize', (event) => {
 			const width = window.innerWidth;
 			const index = width <= 480 ? 2 : width <= 768 ? 3 : 4;
@@ -49,25 +51,27 @@ const HomePage = (props: Props) => {
 	}, []);
 
 	useEffect(() => {
-		const items: any[] = [];
-		const numOfDatas = Math.ceil(cats.length / numOfColumn);
+		if (numOfColumn) {
+			const items: any[] = [];
+			const numOfDatas = Math.ceil(cats.length / numOfColumn);
 
-		for (let index = 0; index < numOfDatas; index++) {
-			const values = cats.splice(0, numOfColumn);
+			for (let index = 0; index < numOfDatas; index++) {
+				const values = cats.splice(0, numOfColumn);
 
-			items.push({
-				key: `array${index}`,
-				values,
-			});
+				items.push({
+					key: `array${index}`,
+					values,
+				});
+			}
+
+			setCatsArrays(items);
 		}
-
-		setCatsArrays(items);
 	}, [numOfColumn]);
 
 	return (
 		<>
 			<HeadComponent title='Home' />
-			<div
+			{/* <div
 				className='container-fluid d-none d-md-block'
 				style={{ backgroundColor: '#f3f3f3' }}>
 				<div className='container'>
@@ -130,7 +134,7 @@ const HomePage = (props: Props) => {
 						</Carousel>
 					)}
 				</div>
-			</div>
+			</div> */}
 			<div className='container'>
 				<Section>
 					<TabbarComponent
@@ -155,16 +159,15 @@ const HomePage = (props: Props) => {
 					<Carousel speed={1500} ref={catSlideRef} autoplay>
 						{catsArrays &&
 							catsArrays.map((array) => (
-								<div>
+								<div key={`array${Math.floor(Math.random() * 10000)}`}>
 									<div className='row'>
-										{array.values.map((item) => (
+										{array.values.map((item, index) => (
 											<div className='col'>
 												{
 													<div>
 														<img
 															style={{
 																width: '100%',
-
 																borderRadius: 12,
 															}}
 															alt={item.title}
@@ -201,7 +204,7 @@ const HomePage = (props: Props) => {
 							))}
 					</Carousel>
 				</Section>
-				<Section>
+				{/* <Section>
 					<TabbarComponent title='Our Bestseller' />
 					<div className='row'>
 						{bestSellers &&
@@ -209,7 +212,7 @@ const HomePage = (props: Props) => {
 								<ProductItem item={item} key={item._id} />
 							))}
 					</div>
-				</Section>
+				</Section> */}
 			</div>
 		</>
 	);

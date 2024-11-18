@@ -2,16 +2,27 @@
 
 import handleAPI from '@/apis/handleApi';
 import { CategoyModel } from '@/models/Products';
-import { Card, Drawer, Empty, List, Skeleton, Typography } from 'antd';
+import {
+	Card,
+	Drawer,
+	Empty,
+	List,
+	Menu,
+	MenuProps,
+	Skeleton,
+	Typography,
+} from 'antd';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
+type MenuItem = Required<MenuProps>['items'][number];
+
 interface Props {
-	isVisible: boolean;
-	onClose: () => void;
+	type: 'card' | 'menu';
 }
 
 const CategoriesListCard = (props: Props) => {
-	const { isVisible, onClose } = props;
+	const { type } = props;
 	const [isLoading, setIsLoading] = useState(false);
 	const [categories, setCategories] = useState<CategoyModel[]>([]);
 
@@ -49,7 +60,7 @@ const CategoriesListCard = (props: Props) => {
 		setCategories(values);
 	};
 
-	return (
+	return type === 'card' ? (
 		<Card
 			className='shadow mt-3'
 			style={{
@@ -71,7 +82,13 @@ const CategoriesListCard = (props: Props) => {
 												className='menu-category-list'
 												key={chil._id}
 												style={{ border: 'none' }}>
-												<List.Item.Meta title={chil.title} />
+												<List.Item.Meta
+													title={
+														<Link href={`/shop?catId=${chil._id}`}>
+															{chil.title}
+														</Link>
+													}
+												/>
 											</List.Item>
 										)}
 									/>
@@ -84,6 +101,17 @@ const CategoriesListCard = (props: Props) => {
 				<Empty description='Không tìm thấy dữ liệu' />
 			)}
 		</Card>
+	) : (
+		<Menu
+			items={categories.map((item) => ({
+				key: item._id,
+				label: item.title,
+				children: item.children.map((child) => ({
+					key: child._id,
+					label: <Link href={`/shop?catId=${child._id}`}>{child.title}</Link>,
+				})),
+			}))}
+		/>
 	);
 };
 

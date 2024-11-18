@@ -71,10 +71,7 @@ const HeaderComponent = () => {
 											<Dropdown
 												placement='bottomCenter'
 												dropdownRender={() => (
-													<CategoriesListCard
-														isVisible={isVisibleMenuDrawe}
-														onClose={() => setIsVisibleMenuDrawe(false)}
-													/>
+													<CategoriesListCard type='card' />
 												)}>
 												<Typography.Text
 													onClick={() => setIsVisibleMenuDrawe(true)}>
@@ -216,7 +213,7 @@ const HeaderComponent = () => {
 					open={isVisibleDrawer}
 					onClick={() => setIsVisibleDrawer(false)}
 					placement='left'>
-					Hello
+					<CategoriesListCard type='menu' />
 				</Drawer>
 
 				{productSeleted && (
