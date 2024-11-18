@@ -4,15 +4,15 @@ import { authSelector } from '@/redux/reducers/authReducer';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import HomePage from './HomePage';
-import Login from './auth/login';
 import { appInfo } from '@/constants/appInfos';
+import Login from './auth/login';
 
 const Home = (data: any) => {
 	const pageProps = data.pageProps;
 
 	const auth = useSelector(authSelector);
 
-	return auth.accesstoken ? <HomePage {...pageProps} /> : <Login />;
+	return <HomePage {...pageProps} />;
 };
 
 export default Home;

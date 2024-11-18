@@ -3,7 +3,16 @@
 import handleAPI from '@/apis/handleApi';
 import { ReviewModel } from '@/models/ReviewModel';
 import { authSelector } from '@/redux/reducers/authReducer';
-import { Avatar, Button, Input, List, Rate, Space, Typography } from 'antd';
+import {
+	Avatar,
+	Button,
+	Divider,
+	Input,
+	List,
+	Rate,
+	Space,
+	Typography,
+} from 'antd';
 import { useEffect, useState } from 'react';
 import { IoIosSend } from 'react-icons/io';
 import { useSelector } from 'react-redux';
@@ -11,6 +20,7 @@ import ListReviews from './ListReviews';
 import { ProfileModel } from '@/models/ProfileModel';
 import { BiUser } from 'react-icons/bi';
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
+import { DateTime } from '@/utils/dateTime';
 
 interface Props {
 	item: ReviewModel;
@@ -106,12 +116,24 @@ const ReviewItem = (props: Props) => {
 			/>
 
 			<>
-				<div>{item.comment}</div>
-				<Space>
-					<Typography.Text type='secondary'>Posted on:</Typography.Text>
-					<Typography.Text>{item.createdAt}</Typography.Text>
-				</Space>
+				<div className=''>{item.comment}</div>
+				<div className='mb-2'>
+					<Space>
+						<Typography.Text type='secondary'>Posted on:</Typography.Text>
+						<Typography.Text>
+							{DateTime.getShortDateEng(item.createdAt)}
+						</Typography.Text>
+					</Space>
+				</div>
+				{item.images && item.images.length > 0 && (
+					<Space>
+						{item.images.map((url) => (
+							<Avatar src={url} size={100} shape='square' />
+						))}
+					</Space>
+				)}
 			</>
+
 			<div className='mb-3 mt-2'>
 				<Space>
 					<Button

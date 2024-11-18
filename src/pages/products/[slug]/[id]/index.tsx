@@ -29,7 +29,7 @@ import {
 	Typography,
 } from 'antd';
 import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { IoAddSharp, IoHeartOutline } from 'react-icons/io5';
@@ -56,6 +56,10 @@ const ProductDetail = ({ pageProps }: any) => {
 	const [instockQuantity, setInstockQuantity] = useState(
 		subProductSelected?.qty
 	);
+	const [reviewDatas, setReviewDatas] = useState<{
+		count: number;
+		total: number;
+	}>();
 
 	const auth = useSelector(authSelector);
 	const router = useRouter();
@@ -78,6 +82,10 @@ const ProductDetail = ({ pageProps }: any) => {
 	useEffect(() => {
 		setCount(1);
 	}, [subProductSelected]);
+
+	useEffect(() => {
+		handleGetReviewData();
+	}, [id]);
 
 	useEffect(() => {
 		const item = cart.find(
@@ -183,6 +191,16 @@ const ProductDetail = ({ pageProps }: any) => {
 		);
 	};
 
+	const handleGetReviewData = async () => {
+		const api = `/reviews/get-start-count?id=${id}`;
+		try {
+			const res: any = await handleAPI({ url: api });
+			setReviewDatas(res.data.data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	return subProductSelected ? (
 		<div>
 			<HeadComponent
@@ -255,11 +273,18 @@ const ProductDetail = ({ pageProps }: any) => {
 									</Tag>
 								</div>
 							</div>
-							<Space>
-								<Rate count={5} />
-								<Text type='secondary'>(5.0)</Text>
-								<Text type='secondary'>(1.230)</Text>
-							</Space>
+							{reviewDatas && (
+								<Space>
+									<Rate
+										disabled
+										allowHalf
+										defaultValue={reviewDatas.count}
+										count={5}
+									/>
+									<Text type='secondary'>({reviewDatas?.count})</Text>
+									<Text type='secondary'>({reviewDatas.total}) reviews</Text>
+								</Space>
+							)}
 
 							<div className='mt-3'>
 								<Space>

@@ -4,7 +4,7 @@ import { ProductItem, Section, TabbarComponent } from '@/components';
 import HeadComponent from '@/components/HeadComponent';
 import { CategoyModel, ProductModel } from '@/models/Products';
 import { PromotionModel } from '@/models/PromotionModel';
-import { Button, Carousel, Space, Typography } from 'antd';
+import { Button, Carousel, Divider, Space, Typography } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -97,12 +97,23 @@ const HomePage = (props: Props) => {
 												left: 20,
 											}}>
 											<Title className='m-0'>{item.title}</Title>
-											<Title
-												level={3}
-												className='m-0'
-												style={{ fontWeight: 300 }}>
-												UP TO {item.value} {item.type === 'percent' ? '%' : ''}
-											</Title>
+											<Space>
+												<Title
+													level={3}
+													className='m-0'
+													style={{ fontWeight: 300 }}>
+													UP TO {item.value}{' '}
+													{item.type === 'percent' ? '%' : ''}
+												</Title>
+												<Divider type='vertical' />
+												<Title
+													copyable
+													level={4}
+													className='m-0'
+													style={{ fontWeight: 300 }}>
+													{item.code}
+												</Title>
+											</Space>
 
 											<div className='mt-4'>
 												<Button

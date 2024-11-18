@@ -6,12 +6,11 @@ import { localDataNames } from '@/constants/appInfos';
 import { addAuth, authSelector } from '@/redux/reducers/authReducer';
 import { syncProducts } from '@/redux/reducers/cartReducer';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-const { Content, Footer, Header } = Layout;
-
 import { Layout, Spin } from 'antd';
+import { useRouter } from 'next/router';
 
 const Routers = ({ Component, pageProps }: any) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +18,7 @@ const Routers = ({ Component, pageProps }: any) => {
 	const path = usePathname();
 	const dispatch = useDispatch();
 	const auth = useSelector(authSelector);
+	const router = useRouter();
 
 	useEffect(() => {
 		getData();
@@ -27,6 +27,12 @@ const Routers = ({ Component, pageProps }: any) => {
 	useEffect(() => {
 		getDatabaseDatas();
 	}, [auth]);
+
+	useEffect(() => {
+		if (auth.accesstoken && path.includes('/auth')) {
+			router.push('/');
+		}
+	}, [auth, path]);
 
 	const getData = async () => {
 		const res = localStorage.getItem(localDataNames.authData);
@@ -59,16 +65,14 @@ const Routers = ({ Component, pageProps }: any) => {
 
 	return isLoading ? (
 		<Spin />
-	) : !auth || !auth.accesstoken ? (
+	) : path.includes('/auth') ? (
 		<Layout className='bg-white'>
 			<Component pageProps={pageProps} />
 		</Layout>
 	) : (
 		<Layout className='bg-white'>
 			<HeaderComponent />
-			<Content>
-				<Component pageProps={pageProps} />
-			</Content>
+			<Component pageProps={pageProps} />
 		</Layout>
 	);
 };

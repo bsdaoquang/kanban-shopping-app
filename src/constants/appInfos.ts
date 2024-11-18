@@ -8,4 +8,18 @@ export const appInfo = {
 	title: 'KANBAN',
 	description: '',
 	baseUrl: 'http://192.168.1.244:3002',
+	monthShortNames: [
+		'Jan',
+		'Feb',
+		'Mar',
+		'Apr',
+		'May',
+		'Jun',
+		'Jul',
+		'Aug',
+		'Sept',
+		'Oct',
+		'Nov',
+		'Dec',
+	],
 };

@@ -2,12 +2,11 @@
 
 import handleAPI from '@/apis/handleApi';
 import { ReviewModel } from '@/models/ReviewModel';
-import { List, message, Skeleton, Space, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
-import ReviewItem from './ReviewItem';
-import { auth } from '@/firebase/firebaseConfig';
-import { useSelector } from 'react-redux';
 import { authSelector } from '@/redux/reducers/authReducer';
+import { Button, List, message, Skeleton } from 'antd';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import ReviewItem from './ReviewItem';
 
 interface Props {
 	parentId: string;
@@ -19,7 +18,7 @@ const ListReviews = (props: Props) => {
 	const { parentId, datas, isParent } = props;
 	const [isLoading, setIsLoading] = useState(false);
 	const [reviews, setReviews] = useState<ReviewModel[]>([]);
-	const [isLimit, setIsLimit] = useState(true);
+	const [limit, setLimit] = useState(5);
 
 	const auth = useSelector(authSelector);
 
@@ -32,7 +31,7 @@ const ListReviews = (props: Props) => {
 	}, [parentId, datas]);
 
 	const getAllReviews = async () => {
-		const api = `/reviews?id=${parentId}${isLimit ? `&limit=5` : ''}`;
+		const api = `/reviews?id=${parentId}&limit=${limit !== 5 ? limit : 5}`;
 		setIsLoading(reviews.length === 0);
 		try {
 			const res = await handleAPI({ url: api });
@@ -57,14 +56,6 @@ const ListReviews = (props: Props) => {
 			} else {
 				vals.push(auth._id);
 			}
-
-			//
-
-			// if (type === 'like') {
-			// 	items[index].like = vals;
-			// } else {
-			// 	items[index].dislike = vals;
-			// }
 
 			try {
 				const res = await handleAPI({
@@ -108,20 +99,30 @@ const ListReviews = (props: Props) => {
 	return isLoading ? (
 		<Skeleton />
 	) : reviews.length > 0 ? (
-		<List
-			itemLayout='vertical'
-			dataSource={reviews}
-			renderItem={(item) => (
-				<div className=''>
+		<>
+			<List
+				itemLayout='vertical'
+				dataSource={reviews}
+				renderItem={(item) => (
 					<ReviewItem
 						onChangeLike={(id, type) => handleUpdateLike(id, type)}
 						isParent={isParent}
 						item={item}
 						onAddnew={getAllReviews}
 					/>
-				</div>
-			)}
-		/>
+				)}
+			/>
+			<div className='mt-4'>
+				<Button
+					type='link'
+					onClick={() => {
+						setLimit(limit + 5);
+						getAllReviews();
+					}}>
+					Show all
+				</Button>
+			</div>
+		</>
 	) : null;
 };
 

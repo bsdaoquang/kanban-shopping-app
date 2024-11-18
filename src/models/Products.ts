@@ -9,6 +9,7 @@ export interface CategoyModel {
 	createdAt: string;
 	updatedAt: string;
 	image?: string;
+	children: CategoyModel[];
 	__v: number;
 }
 

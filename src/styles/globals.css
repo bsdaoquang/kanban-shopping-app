@@ -98,3 +98,11 @@
 .review-title h4{
   margin-block-end: 0 !important
 }
+
+.menu-category-list{
+  padding: 6px 0 !important;
+}
+
+.menu-category-list h4{
+  font-weight: 400;
+}

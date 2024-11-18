@@ -1,6 +1,5 @@
 /** @format */
 
-import handleAPI from '@/apis/handleApi';
 import { TransationSubProductModal } from '@/modals';
 import { authSelector, removeAuth } from '@/redux/reducers/authReducer';
 import { CartItemModel, cartSelector } from '@/redux/reducers/cartReducer';
@@ -21,56 +20,27 @@ import {
 } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AiOutlineTransaction } from 'react-icons/ai';
 import { BiCart, BiPowerOff } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoHeartOutline, IoSearch } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonRemoveCartItem from './ButtonRemoveCartItem';
+import CategoriesListCard from './CategoriesListCard';
 
 const HeaderComponent = () => {
 	const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
 	const [visibleModalTransationProduct, setVisibleModalTransationProduct] =
 		useState(false);
 	const [productSeleted, setProductSeleted] = useState<CartItemModel>();
+	const [isVisibleMenuDrawe, setIsVisibleMenuDrawe] = useState(false);
 
 	const auth = useSelector(authSelector);
 	const dispatch = useDispatch();
 	const router = useRouter();
 
 	const cart: CartItemModel[] = useSelector(cartSelector);
-
-	// youtube: daoquang-livecode
-
-	// useEffect(() => {
-	// 	cart.length > 0 && handleUpdateCardToDatabase(cart);
-	// }, [cart]);
-
-	// const handleUpdateCardToDatabase = async (data: CartItemModel[]) => {
-	// 	data.forEach(async (item) => {
-	// 		const api = `/carts/add-new${item._id ? `?id=${item._id}` : ''}`;
-
-	// 		const value = {
-	// 			createdBy: item.createdBy,
-	// 			count: item.count,
-	// 			subProductId: item.subProductId,
-	// 			size: item.size,
-	// 			title: item.title,
-	// 			color: item.color,
-	// 			price: item.price,
-	// 			qty: item.qty,
-	// 			productId: item.productId,
-	// 			image: item.image,
-	// 		};
-
-	// 		try {
-	// 			await handleAPI({ url: api, data: value, method: 'post' });
-	// 		} catch (error) {
-	// 			console.log(error);
-	// 		}
-	// 	});
-	// };
 
 	return (
 		<Affix offsetTop={0}>
@@ -97,14 +67,22 @@ const HeaderComponent = () => {
 										key: 'home',
 									},
 									{
-										label: <Link href={'/shop'}>Shop</Link>,
+										label: (
+											<Dropdown
+												placement='bottomCenter'
+												dropdownRender={() => (
+													<CategoriesListCard
+														isVisible={isVisibleMenuDrawe}
+														onClose={() => setIsVisibleMenuDrawe(false)}
+													/>
+												)}>
+												<Typography.Text
+													onClick={() => setIsVisibleMenuDrawe(true)}>
+													Shop
+												</Typography.Text>
+											</Dropdown>
+										),
 										key: 'shop',
-										children: [
-											{
-												key: 'cate',
-												label: 'test',
-											},
-										],
 									},
 									{
 										label: <Link href={'/story'}>Out story</Link>,
