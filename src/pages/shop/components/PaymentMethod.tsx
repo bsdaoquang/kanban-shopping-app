@@ -1,14 +1,14 @@
 /** @format */
 
 import { Button, List, Modal, Radio, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CreditCardPayment from './CreditCardPayment';
 
 interface Props {
 	onContinue: (val: any) => void;
 }
 
-const methods = [
+export const methods = [
 	{
 		key: 'cod',
 		title: 'Cash on delivery',
@@ -42,6 +42,12 @@ const PaymentMethod = (props: Props) => {
 				return <></>;
 		}
 	};
+
+	useEffect(() => {
+		if (methodSelected === 'cod') {
+			setIsEnableContineu(true);
+		}
+	}, [methodSelected]);
 
 	const handlePayment = () => {
 		if (methodSelected === 'cod') {

@@ -5,25 +5,31 @@ import HeadComponent from '@/components/HeadComponent';
 import { CartItemModel, cartSelector } from '@/redux/reducers/cartReducer';
 import { VND } from '@/utils/handleCurrency';
 import {
+	Avatar,
 	Button,
 	Card,
 	Divider,
 	Input,
+	List,
 	message,
 	Space,
 	Steps,
 	Typography,
 } from 'antd';
 import { useEffect, useState } from 'react';
-import { BiCreditCard } from 'react-icons/bi';
+import { BiCreditCard, BiEdit } from 'react-icons/bi';
 import { FaStar } from 'react-icons/fa6';
 import { HiHome } from 'react-icons/hi';
 import { useSelector } from 'react-redux';
 import ListCart from './components/ListCart';
+import PaymentMethod, { methods } from './components/PaymentMethod';
 import ShipingAddress from './components/ShipingAddress';
-import PaymentMethod from './components/PaymentMethod';
-import Reviews from './components/reviews';
+
+import { Section } from '@/components';
 import { AddressModel } from '@/models/Products';
+import { DateTime } from '@/utils/dateTime';
+
+const { Title, Text, Paragraph } = Typography;
 
 interface PaymentDetail {
 	address: AddressModel;
@@ -38,9 +44,11 @@ const CheckoutPage = () => {
 	}>();
 	const [grandTotal, setGrandTotal] = useState(0);
 	const [isCheckingCode, setIsCheckingCode] = useState(false);
-	const [checkoutStep, setCheckoutStep] = useState('checkout');
 	const [currentStep, setCurrentStep] = useState<number>();
 	const [paymentDetail, setPaymentDetail] = useState<any>();
+	const [paymentMethod, setPaymentMethod] = useState<{
+		methodSelected: string;
+	}>();
 
 	const carts: CartItemModel[] = useSelector(cartSelector);
 
@@ -87,16 +95,101 @@ const CheckoutPage = () => {
 				return (
 					<PaymentMethod
 						onContinue={(val) => {
-							console.log(val);
+							setPaymentMethod(val);
 							setCurrentStep(2);
 						}}
 					/>
 				);
 			case 2:
-				return <Reviews />;
+				return (
+					<>
+						<Section>
+							<Title level={4}>
+								Estimated delivery:{' '}
+								{DateTime.getShortDateEng(
+									new Date(
+										new Date().getTime() + 3 * 24 * 60 * 60 * 1000
+									).toISOString()
+								)}
+							</Title>
+							<List
+								dataSource={carts}
+								renderItem={(item) => (
+									<List.Item key={item._id}>
+										<List.Item.Meta
+											avatar={
+												<Avatar src={item.image} shape='square' size={72} />
+											}
+											title={
+												<Title level={4} className='mb-1'>
+													{item.title}
+												</Title>
+											}
+											description={
+												<>
+													<Paragraph type='secondary' className='m-0'>
+														${VND.format(item.price)}
+													</Paragraph>
+													<Paragraph type='secondary' className='m-0'>
+														size: {item.size}
+													</Paragraph>
+												</>
+											}
+										/>
+									</List.Item>
+								)}
+							/>
+						</Section>
+						<Section>
+							<Title level={4}>Shipping address</Title>
+							<List
+								dataSource={[paymentDetail]}
+								renderItem={(item) => (
+									<List.Item
+										extra={
+											<Button
+												onClick={() => setCurrentStep(0)}
+												icon={<BiEdit size={20} />}
+												className='text-muted'
+												type='text'
+											/>
+										}>
+										<List.Item.Meta
+											title={`${item.address.name} ${item.address.phoneNumber}`}
+											description={item.address.address}
+										/>
+									</List.Item>
+								)}
+							/>
+						</Section>
+						<Section>
+							<Title level={4}>Paymen method</Title>
+							<Paragraph>
+								{paymentMethod &&
+									methods.find(
+										(element) => element.key === paymentMethod.methodSelected
+									)?.title}
+							</Paragraph>
+						</Section>
+					</>
+				);
 			default:
 				return <ListCart />;
 		}
+	};
+
+	const handlePaymentOrder = async () => {
+		/*
+			id,
+			products,
+			total,
+			status: 0, 1, 2, 4
+			customer_id,
+			createdAt,
+			shippingAddress,
+			paymentStatus: 0, 1,2 
+			paymentMethod: 'cod'
+		*/
 	};
 
 	return (
@@ -201,8 +294,14 @@ const CheckoutPage = () => {
 							</div>
 							<div className='mt-3'>
 								<Button
+									disabled={
+										currentStep !== undefined &&
+										(!paymentMethod || !paymentDetail)
+									}
 									type='primary'
-									onClick={() => setCurrentStep(0)}
+									onClick={() =>
+										!currentStep ? setCurrentStep(0) : console.log(carts)
+									}
 									size='large'
 									style={{ width: '100%' }}>
 									Process to Checkout

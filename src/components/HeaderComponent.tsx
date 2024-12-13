@@ -15,6 +15,7 @@ import {
 	Dropdown,
 	List,
 	Menu,
+	MenuProps,
 	Space,
 	Typography,
 } from 'antd';
@@ -28,6 +29,7 @@ import { IoHeartOutline, IoSearch } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonRemoveCartItem from './ButtonRemoveCartItem';
 import CategoriesListCard from './CategoriesListCard';
+import { FaUser } from 'react-icons/fa';
 
 const HeaderComponent = () => {
 	const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
@@ -40,7 +42,25 @@ const HeaderComponent = () => {
 	const dispatch = useDispatch();
 	const router = useRouter();
 
+	console.log(auth);
 	const cart: CartItemModel[] = useSelector(cartSelector);
+	const items: MenuProps['items'] = [
+		{
+			key: 'profile',
+			label: <Link href={`/profile`}>Profile</Link>,
+			icon: <FaUser size={18} />,
+		},
+		{
+			label: 'SignOut',
+			icon: <BiPowerOff size={22} />,
+			key: 'signout',
+			danger: true,
+			onClick: () => {
+				dispatch(removeAuth({}));
+				localStorage.clear();
+			},
+		},
+	];
 
 	return (
 		<Affix offsetTop={0}>
@@ -188,15 +208,9 @@ const HeaderComponent = () => {
 								</Dropdown>
 								<Divider type='vertical' />
 								{auth.accesstoken && auth._id ? (
-									<Button
-										onClick={() => {
-											dispatch(removeAuth({}));
-											localStorage.clear();
-										}}
-										danger
-										type='text'
-										icon={<BiPowerOff size={23} />}
-									/>
+									<Dropdown overlayStyle={{ minWidth: 320 }} menu={{ items }}>
+										<Avatar src={auth.photoURL} />
+									</Dropdown>
 								) : (
 									<Button
 										type='primary'

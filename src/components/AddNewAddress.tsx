@@ -13,12 +13,13 @@ import { useSelector } from 'react-redux';
 const OPENAPILOCATION = `https://open.oapi.vn/location`;
 
 interface Props {
-	onAddnew: (val: AddressModel) => void;
+	onAddnew?: (val: AddressModel) => void;
 	values?: AddressModel;
+	onSelectAddress?: (val: string) => void;
 }
 
 const AddNewAddress = (props: Props) => {
-	const { onAddnew, values } = props;
+	const { onAddnew, values, onSelectAddress } = props;
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [locationData, setLocationData] = useState<{
@@ -145,23 +146,32 @@ const AddNewAddress = (props: Props) => {
 
 		datas['isDefault'] = isDefault;
 		datas['createdBy'] = auth._id;
+		if (onSelectAddress) {
+			let val = datas['address'];
 
-		setIsLoading(true);
-		try {
-			const res: any = await handleAPI({
-				url: `/carts/${
-					values ? `update-address?id=${values._id}` : 'add-new-address'
-				}`,
-				data: datas,
-				method: values ? 'put' : 'post',
-			});
+			for (const i in locationValues) {
+				val += items[i] ? items[i].val : '';
+			}
 
-			onAddnew(res.data.data);
-			form.resetFields();
-		} catch (error) {
-			console.log(error);
-		} finally {
-			setIsLoading(false);
+			onSelectAddress(val);
+		} else {
+			setIsLoading(true);
+			try {
+				const res: any = await handleAPI({
+					url: `/carts/${
+						values ? `update-address?id=${values._id}` : 'add-new-address'
+					}`,
+					data: datas,
+					method: values ? 'put' : 'post',
+				});
+
+				onAddnew && onAddnew(res.data.data);
+				form.resetFields();
+			} catch (error) {
+				console.log(error);
+			} finally {
+				setIsLoading(false);
+			}
 		}
 	};
 
@@ -180,7 +190,7 @@ const AddNewAddress = (props: Props) => {
 				<Form.Item name={'phoneNumber'} label='Mobile phone'>
 					<Input type='tel' allowClear />
 				</Form.Item>
-				<Form.Item name={'houseNo'} label='houseNo'>
+				<Form.Item name={'houseNo'} label='Street'>
 					<Input allowClear />
 				</Form.Item>
 				<Form.Item

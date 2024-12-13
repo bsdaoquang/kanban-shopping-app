@@ -125,7 +125,7 @@ const ShopPage = () => {
 						<Content>
 							<div className='container'>
 								<div className='row d-none d-md-block'>
-									<div className='col bg-warning'>
+									<div className='col'>
 										<Space>
 											<Button
 												type='text'
