@@ -2,7 +2,11 @@
 
 import handleAPI from '@/apis/handleApi';
 import HeadComponent from '@/components/HeadComponent';
-import { CartItemModel, cartSelector } from '@/redux/reducers/cartReducer';
+import {
+	CartItemModel,
+	cartSelector,
+	removeCarts,
+} from '@/redux/reducers/cartReducer';
 import { VND } from '@/utils/handleCurrency';
 import {
 	Avatar,
@@ -12,6 +16,8 @@ import {
 	Input,
 	List,
 	message,
+	Modal,
+	Result,
 	Space,
 	Steps,
 	Typography,
@@ -20,7 +26,7 @@ import { useEffect, useState } from 'react';
 import { BiCreditCard, BiEdit } from 'react-icons/bi';
 import { FaStar } from 'react-icons/fa6';
 import { HiHome } from 'react-icons/hi';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ListCart from './components/ListCart';
 import PaymentMethod, { methods } from './components/PaymentMethod';
 import ShipingAddress from './components/ShipingAddress';
@@ -28,6 +34,8 @@ import ShipingAddress from './components/ShipingAddress';
 import { Section } from '@/components';
 import { AddressModel } from '@/models/Products';
 import { DateTime } from '@/utils/dateTime';
+import { authSelector } from '@/redux/reducers/authReducer';
+import { useRouter } from 'next/router';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -49,8 +57,12 @@ const CheckoutPage = () => {
 	const [paymentMethod, setPaymentMethod] = useState<{
 		methodSelected: string;
 	}>();
+	const [isLoading, setIsLoading] = useState(false);
 
 	const carts: CartItemModel[] = useSelector(cartSelector);
+	const user = useSelector(authSelector);
+	const router = useRouter();
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		if (discountValue && carts.length > 0) {
@@ -180,16 +192,56 @@ const CheckoutPage = () => {
 
 	const handlePaymentOrder = async () => {
 		/*
-			id,
+			
 			products,
 			total,
 			status: 0, 1, 2, 4
-			customer_id,
 			createdAt,
 			shippingAddress,
 			paymentStatus: 0, 1,2 
 			paymentMethod: 'cod'
 		*/
+
+		const data = {
+			products: carts,
+			total: carts.reduce((a, b) => a + b.price * b.count, 0),
+			shippingAddress: paymentDetail,
+			paymentMethod: paymentMethod?.methodSelected ?? '',
+		};
+
+		setIsLoading(true);
+		try {
+			const res = await handleAPI({
+				url: '/payments/add-bill',
+				data,
+				method: 'post',
+			});
+
+			await handleAPI({
+				url: '/carts/clear-carts',
+			});
+
+			// gọi api gửi mail thông báo cho người dùng
+
+			dispatch(removeCarts({}));
+
+			Modal.confirm({
+				type: 'success',
+				title: 'Thành công',
+				content: 'Cám ơn bạn đã đặt hàng, đơn hàng của bạn đang được xử lý',
+				onOk: () => router.push('/profile?key=orders'),
+				okButtonProps: {
+					title: 'View Order',
+					type: 'primary',
+				},
+				cancelText: 'Back to home',
+				onCancel: () => router.push('/'),
+			});
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -300,7 +352,7 @@ const CheckoutPage = () => {
 									}
 									type='primary'
 									onClick={() =>
-										!currentStep ? setCurrentStep(0) : console.log(carts)
+										!currentStep ? setCurrentStep(0) : handlePaymentOrder()
 									}
 									size='large'
 									style={{ width: '100%' }}>

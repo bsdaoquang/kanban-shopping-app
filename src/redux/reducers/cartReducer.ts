@@ -77,6 +77,9 @@ const cartSlice = createSlice({
 		syncProducts: (state, action) => {
 			state.data = action.payload;
 		},
+		removeCarts: (state, action) => {
+			state.data = [];
+		},
 	},
 });
 
@@ -87,6 +90,7 @@ export const {
 	removeProduct,
 	changeCount,
 	changeProduct,
+	removeCarts,
 } = cartSlice.actions;
 
 export const cartSelector = (state: any) => state.cartReducer.data;
